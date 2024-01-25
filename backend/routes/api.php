@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FeedbackPostController;
+use App\Models\FeedbackPost;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,9 +18,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->get('/user', function () {
+    return Auth::user();
 });
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/authenticate', [AuthController::class, 'authenticate']);
+
+// Feedback Posts
+Route::get('/feedback/{id}', [FeedbackPostController::class, 'getPostById']);
+Route::get('/feedback', [FeedbackPostController::class, 'getAll']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/feedback', [FeedbackPostController::class, 'create']);
+    Route::put('/feedback/{id}', [FeedbackPostController::class, 'update']);
+    Route::delete('/feedback/{id}', [FeedbackPostController::class, 'delete']);
+});

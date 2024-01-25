@@ -13,9 +13,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('votes', function (Blueprint $table) {
             $table->id();
-            $table->text('content');
             $table->foreignIdFor(User::class)
                 ->constrained()
                 ->cascadeOnUpdate()
@@ -24,7 +23,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-
+            $table->unique(['user_id', 'feedback_post_id']);
+            $table->boolean('is_upvote');
             $table->timestamps();
         });
     }
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('votes');
     }
 };

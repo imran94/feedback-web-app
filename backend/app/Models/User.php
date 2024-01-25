@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin'
     ];
 
     /**
@@ -46,11 +47,16 @@ class User extends Authenticatable
 
     public function feedbackPosts(): HasMany
     {
-        return $this->hasMany(Feedback::class);
+        return $this->hasMany(FeedbackPost::class);
     }
 
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function votes(): HasMany
+    {
+        return $this->hasMany(Vote::class);
     }
 }

@@ -12,13 +12,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('feedback', function (Blueprint $table) {
+        Schema::create('feedback_posts', function (Blueprint $table) {
             $table->id();
             $table->text('title');
             $table->text('description');
             $table->string('category', 50);
             $table->integer('voteCount')->default(0);
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(User::class)
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('feedback');
+        Schema::dropIfExists('feedback_posts');
     }
 };

@@ -7,12 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Comment extends Model
+class FeedbackPost extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'content'
+        'title',
+        'description',
+        'category',
+        'voteCount'
     ];
 
     public function user(): BelongsTo
@@ -20,8 +28,13 @@ class Comment extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function feedbackPost(): BelongsTo
+    public function comments(): HasMany
     {
-        return $this->belongsTo(FeedbackPost::class);
+        return $this->hasMany(Comment::class);
+    }
+
+    public function votes(): HasMany
+    {
+        return $this->hasMany(Vote::class);
     }
 }
