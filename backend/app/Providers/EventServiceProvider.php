@@ -20,6 +20,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        Vote::class => [
+            VoteObserver::class
+        ]
     ];
 
     /**
@@ -27,7 +30,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Vote::observe(VoteObserver::class);
+        // Vote::observe(VoteObserver::class);
     }
 
     /**

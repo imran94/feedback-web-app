@@ -9,6 +9,7 @@ use App\Models\FeedbackPost;
 use App\Models\User;
 use App\Models\Vote;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,6 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Log::info('Creating users');
         User::factory(50)
             ->hasFeedbackPosts(5)
             ->create();
@@ -41,12 +43,5 @@ class DatabaseSeeder extends Seeder
                 $vote->save();
             }
         }
-
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

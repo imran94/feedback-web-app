@@ -12,11 +12,12 @@ class VoteObserver
      */
     public function created(Vote $vote): void
     {
-        Log::debug("Vote created. " . $vote->is_upvote);
+        Log::debug('Vote created');
         $post = $vote->feedbackPost;
-        $post->voteCount += $vote->is_upvote ? 1 : -1;
-        $post->save();
-        Log::debug("Saved post having " . $post->voteCount . " votes");
+        Log::debug('Post vote count before: ' . $post->vote_count);
+        $post->vote_count += $vote->is_upvote ? 1 : -1;
+        $res = $post->save();
+        Log::debug('Post vote count after: ' . $post->vote_count . '. Result: ' . $res);
     }
 
     /**
@@ -24,11 +25,12 @@ class VoteObserver
      */
     public function updated(Vote $vote): void
     {
-        Log::debug("Vote updated. " . $vote->is_upvote);
+        Log::debug('Vote udpated');
         $post = $vote->feedbackPost;
-        $post->feedbackPost->voteCount += $vote->is_upvote ? 2 : -2;
-        $post->save();
-        Log::debug("Saved post having " . $post->voteCount . " votes");
+        Log::debug('Post vote count before: ' . $post->vote_count);
+        $post->vote_count += $vote->is_upvote ? 2 : -2;
+        $res = $post->save();
+        Log::debug('Post vote count after: ' . $post->vote_count . '. Result: ' . $res);
     }
 
     /**
@@ -36,11 +38,12 @@ class VoteObserver
      */
     public function deleted(Vote $vote): void
     {
-        Log::debug("Vote deleted. " . $vote->is_upvote);
+        Log::debug('Vote deleted');
         $post = $vote->feedbackPost;
-        $post->feedbackPost->voteCount += $vote->is_upvote ? -1 : 1;
-        $post->save();
-        Log::debug("Saved post having " . $post->voteCount . " votes");
+        Log::debug('Post vote count before: ' . $post->vote_count);
+        $post->vote_count += $vote->is_upvote ? -1 : 1;
+        $res = $post->save();
+        Log::debug('Post vote count after: ' . $post->vote_count . '. Result: ' . $res);
     }
 
     /**
@@ -48,7 +51,7 @@ class VoteObserver
      */
     public function restored(Vote $vote): void
     {
-        //
+        Log::debug('Vote restored');
     }
 
     /**
@@ -56,6 +59,11 @@ class VoteObserver
      */
     public function forceDeleted(Vote $vote): void
     {
-        //
+        Log::debug('Vote forceDeleted');
+        $post = $vote->feedbackPost;
+        Log::debug('Post vote count before: ' . $post->vote_count);
+        $post->vote_count += $vote->is_upvote ? -1 : 1;
+        $res = $post->save();
+        Log::debug('Post vote count after: ' . $post->vote_count . '. Result: ' . $res);
     }
 }

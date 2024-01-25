@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('title');
             $table->text('description');
             $table->string('category', 50);
-            $table->integer('voteCount')->default(0);
+            $table->integer('vote_count')->default(0);
             $table->foreignIdFor(User::class)
                 ->constrained()
                 ->cascadeOnUpdate()

@@ -14,13 +14,9 @@ class FeedbackPostController extends Controller
         return response()->json(FeedbackPost::all());
     }
 
-    public function getPostById(string $id)
+    public function getPostById(FeedbackPost $feedbackPost)
     {
-        $post = FeedbackPost::find($id);
-        if (is_null($post)) {
-            return response()->json(["message" => "Post not found."], 404);
-        }
-        return response()->json($post);
+        return response()->json($feedbackPost);
     }
 
     public function create(Request $request)
@@ -35,11 +31,11 @@ class FeedbackPostController extends Controller
         $post->title = $request->input('title');
         $post->description = $request->input('description');
         $post->category = $request->input('category');
-        $post->user = Auth::user();
+        $post->user()->associate(Auth::user());
         $post->save();
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, FeedbackPost $feedbackPost)
     {
         $request->validate([
             'title' => 'required|string|max:250',
@@ -47,26 +43,18 @@ class FeedbackPostController extends Controller
             'category' => 'required|string|max:50'
         ]);
 
-        $post = FeedbackPost::find($id);
-        if (is_null($post)) {
-            return response()->json(["message" => "Post not found."], 404);
-        }
+        $this->authorize('modify', $feedbackPost);
 
-        $this->authorize('modify', $post);
-
-        $post->title = $request->input('title');
-        $post->description = $request->input('description');
-        $post->category = $request->input('category');
-        $post->save();
+        $feedbackPost->title = $request->input('title');
+        $feedbackPost->description = $request->input('description');
+        $feedbackPost->category = $request->input('category');
+        $feedbackPost->save();
     }
 
-    public function delete(string $id)
+    public function delete(FeedbackPost $feedbackPost)
     {
-        $post = FeedbackPost::find($id);
-        if (is_null($post)) {
-            return response()->json(["message" => "Post not found."], 404);
-        }
-        $this->authorize('modify', $post);
+        $this->authorize('modify', $feedbackPost);
+        $feedbackPost->delete();
 
         return response()->json();
     }

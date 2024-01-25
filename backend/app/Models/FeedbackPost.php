@@ -20,7 +20,7 @@ class FeedbackPost extends Model
         'title',
         'description',
         'category',
-        'voteCount'
+        'vote_count'
     ];
 
     public function user(): BelongsTo
