@@ -19,6 +19,11 @@ class FeedbackPostController extends Controller
         return response()->json(FeedbackPost::with(['user', 'comments.user'])->find($id));
     }
 
+    public function getByUser()
+    {
+        return response()->json(Auth::user()->feedbackPosts()->with('user')->get());
+    }
+
     public function create(Request $request)
     {
         $request->validate([
