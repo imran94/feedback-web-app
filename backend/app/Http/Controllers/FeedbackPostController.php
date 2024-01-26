@@ -11,12 +11,12 @@ class FeedbackPostController extends Controller
 
     public function getAll()
     {
-        return response()->json(FeedbackPost::all());
+        return response()->json(FeedbackPost::with('user')->get());
     }
 
-    public function getPostById(FeedbackPost $feedbackPost)
+    public function getPostById(string $id)
     {
-        return response()->json($feedbackPost);
+        return response()->json(FeedbackPost::with(['user', 'comments.user'])->find($id));
     }
 
     public function create(Request $request)
@@ -33,6 +33,8 @@ class FeedbackPostController extends Controller
         $post->category = $request->input('category');
         $post->user()->associate(Auth::user());
         $post->save();
+
+        return response()->json($post);
     }
 
     public function update(Request $request, FeedbackPost $feedbackPost)
@@ -49,6 +51,7 @@ class FeedbackPostController extends Controller
         $feedbackPost->description = $request->input('description');
         $feedbackPost->category = $request->input('category');
         $feedbackPost->save();
+        return response()->json($feedbackPost);
     }
 
     public function delete(FeedbackPost $feedbackPost)

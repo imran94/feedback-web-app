@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,12 +13,47 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue')
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue')
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegistrationView.vue')
+    },
+    {
+      path: '/feedback/:id',
+      name: 'feedbackThread',
+      component: () => import('../views/FeedbackThreadView.vue')
+    },
+    {
+      path: '/feedback-form',
+      name: 'createFeedbackForm',
+      component: () => import('../views/FeedbackFormView.vue')
+    },
+    {
+      path: '/feedback-form/:id',
+      name: 'editFeedbackForm',
+      component: () => import('../views/FeedbackFormView.vue')
     }
   ]
 })
 
 export default router
+
+router.beforeEach((to, from, next) => {
+  if (to.name === 'login' && useAuthStore().isAuth) next({ name: 'home' })
+  else if (to.name === 'profile' && !useAuthStore().isAuth) next({ name: 'login' })
+  else if (to.name === 'createFeedbackForm' && !useAuthStore().isAuth) next({ name: 'login' })
+  else if (to.name === 'editFeedbackForm' && !useAuthStore().isAuth) next({ name: 'login' })
+  else next()
+})

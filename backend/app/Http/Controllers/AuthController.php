@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8'
@@ -21,13 +21,17 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password'))
+            'password' => Hash::make($request->input('password')),
+            'is_admin' => $request->input('is_admin') ?? false
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'accessToken' => $token
+            'accessToken' => $token,
+            'name' => $user->name,
+            'isAdmin' => $user->isAdmin,
+            'userId' => $user->id
         ]);
     }
 
@@ -47,7 +51,10 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'accessToken' => $token
+            'accessToken' => $token,
+            'name' => $user->name,
+            'isAdmin' => $user->isAdmin,
+            'userId' => $user->id
         ]);
     }
 }

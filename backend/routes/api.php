@@ -20,18 +20,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function () {
-    return Auth::user();
-});
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/authenticate', [AuthController::class, 'authenticate']);
 
 // Feedback Posts
-Route::get('/feedback/{feedbackPost}', [FeedbackPostController::class, 'getPostById']);
+Route::get('/feedback/{id}', [FeedbackPostController::class, 'getPostById']);
 Route::get('/feedback', [FeedbackPostController::class, 'getAll']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function () {
+        return Auth::user();
+    });
+
     Route::post('/feedback', [FeedbackPostController::class, 'create']);
     Route::put('/feedback/{feedbackPost}', [FeedbackPostController::class, 'update']);
     Route::delete('/feedback/{feedbackPost}', [FeedbackPostController::class, 'delete']);
@@ -40,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/comments/{comment}', [CommentController::class, 'update']);
     Route::delete('/comments/{comment}', [CommentController::class, 'delete']);
 
-    Route::put('/feedback/{postId}/vote', [VoteController::class, 'vote']);
+    Route::put('/feedback/{post}/vote', [VoteController::class, 'vote']);
     Route::delete('/feedback/{postId}/vote', [VoteController::class, 'delete']);
+    Route::get('/feedback/{post}/vote', [VoteController::class, 'getUserVote']);
 });

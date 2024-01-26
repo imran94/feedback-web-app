@@ -30,6 +30,8 @@ class CommentController extends Controller
         $comment->user()->associate(Auth::user());
         $comment->feedbackPost()->associate($feedbackPost);
         $comment->save();
+
+        return response()->json($comment);
     }
 
     public function update(Request $request, Comment $comment)
@@ -41,6 +43,8 @@ class CommentController extends Controller
         ]);
         $comment->content = $request->input('content');
         $comment->save();
+
+        return response()->json($comment);
     }
 
     public function delete(Comment $comment)

@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
         $posts = FeedbackPost::all();
         $users = User::all();
 
-        $votes = [];
         foreach ($posts as $post) {
             for ($i = 0; $i < 15; $i++) {
                 $comment = new Comment(['content' => fake()->paragraphs(1, true)]);
