@@ -4,6 +4,8 @@ import { ref, onMounted, computed } from 'vue'
 import Swal from 'sweetalert2'
 import router from '@/router';
 import { marked } from 'marked'
+import Editor from 'primevue/editor'
+
 
 
 import { useAuthStore } from '@/stores/auth';
@@ -22,6 +24,7 @@ const post = ref({
 })
 const userVote = ref({ isUpvote: null })
 const isLoading = ref(true)
+const isSubmittingComment = ref(false)
 const ownComment = ref('')
 
 async function fetchPostDetails() {
@@ -32,7 +35,7 @@ async function fetchPostDetails() {
         post.value.comments = post.value.comments.map(comment => {
             comment.content = marked.parse(comment.content)
             comment.isEditing = false
-            comment.editedComment = ''
+            comment.editedComment = comment.content
             return comment
         })
         post.value.description = marked.parse(post.value.description)
@@ -96,6 +99,9 @@ async function deletePost() {
 }
 
 async function submitNewComment() {
+    if (isEmptyHtml(ownComment.value)) return
+
+    isSubmittingComment.value = true
     const res = await utils.networkRequest(
         `/feedback/${post.value.id}/comments`,
         'POST',
@@ -103,11 +109,15 @@ async function submitNewComment() {
     )
 
     ownComment.value = ''
+    isSubmittingComment.value = false
+
     const isSuccess = res.status === 200
     if (isSuccess) {
         const newComment = await res.json()
-        newComment.content = marked.parse(newComment.content)
-        post.value.comments = { ...post.value.comments, newComment }
+        newComment.editedComment = newComment.content
+        const comments = post.value.comments
+        comments.push(newComment)
+        post.value.comments = comments
     }
     Swal.fire({
         title: isSuccess ? 'Comment successfully created' : 'Failed to create comment',
@@ -120,6 +130,7 @@ async function submitNewComment() {
 }
 
 async function updateComment(comment) {
+    if (isEmptyHtml(comment.editedComment)) return
 
     let updatedComment = { ...comment }
     updatedComment.content = comment.editedComment
@@ -132,9 +143,10 @@ async function updateComment(comment) {
         updatedComment = await res.json()
         comment.content = updatedComment.content
         comment.isEditing = false
-        comment.editedComment = ''
+        comment.editedComment = comment.content
 
-        post.value.comments[post.value.comments.findIndex(c => c.id === updatedComment.id)] = comment
+        const comments = post.value.comments
+        post.value.comments[comments.findIndex(c => c.id === updatedComment.id)] = comment
         post.value.comments = { ...post.value.comments }
     }
     Swal.fire({
@@ -172,7 +184,7 @@ async function deleteComment(comment) {
 }
 
 function startEditingComment(comment, isEditing) {
-    comment.editedComment = ''
+    comment.editedComment = comment.content
     comment.isEditing = isEditing
 }
 
@@ -187,6 +199,13 @@ const convertedDescription = computed(() => {
 const convertedComment = computed(() => {
     return marked.parse(ownComment.value)
 })
+
+const domParser = new DOMParser()
+function isEmptyHtml(str) {
+    let parsedString = domParser.parseFromString(str, 'text/html').body.textContent || '';
+    return parsedString.trim() === ''
+
+}
 </script>
 
 <template>
@@ -246,15 +265,10 @@ const convertedComment = computed(() => {
 
         <form @submit.prevent="submitNewComment" v-if="auth.isAuth" class="comment-form">
             <div class="m-form-group">
-                <textarea v-model="ownComment" class="form-control" id="description" rows="8" required :disabled="isLoading"
-                    placeholder="Write a comment"></textarea>
+                <label>Write a comment</label>
+                <Editor v-model="ownComment" editorStyle="height: 320px" />
             </div>
-            <div class="m-form-group">
-                Preview:
-                <div v-html="convertedComment"></div>
-
-            </div>
-            <button type="submit" class="btn btn-secondary">Submit</button>
+            <button type="submit" class="btn btn-secondary" :disabled="isSubmittingComment">Submit</button>
         </form>
 
         <div class="heading">
@@ -262,7 +276,7 @@ const convertedComment = computed(() => {
         </div>
 
         <template v-for="comment in post.comments" :key="comment.id">
-            <div class="m-card">
+            <div class="m-card" v-show="!comment.isEditing">
                 <div class="m-card-header">
 
                     <div class="m-card-title">
@@ -294,18 +308,11 @@ const convertedComment = computed(() => {
 
             <template v-if="comment.isEditing">
                 <div class="m-form-group">
-                    <textarea v-model="comment.editedComment" class="form-control" id="description" rows="8" required
-                        :disabled="isLoading" placeholder="Write a comment"></textarea>
+                    <Editor v-model="comment.editedComment" editorStyle="height: 250px" />
                 </div>
                 <div>
                     <button class="btn btn-warning" @click="startEditingComment(comment, false)">Cancel</button>
                     <button class="btn btn-secondary" style="margin-left: 1em" @click="updateComment(comment)">Edit</button>
-                </div>
-
-                <div class="m-form-group">
-                    Preview:
-                    <div v-html="marked.parse(comment.editedComment)"></div>
-
                 </div>
             </template>
         </template>

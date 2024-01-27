@@ -3,8 +3,10 @@
 import { computed, onMounted, ref } from 'vue'
 import Swal from 'sweetalert2'
 import utils from '../utils'
-import router from '@/router';
+import router from '@/router'
 import { marked } from 'marked'
+import Editor from 'primevue/editor'
+
 
 import { useAuthStore } from '@/stores/auth';
 const auth = useAuthStore()
@@ -125,7 +127,7 @@ async function submitFeedback() {
                         :disabled="isLoading">
                 </div>
 
-                <div class="m-form-group">
+                <!-- <div class="m-form-group">
                     <label for="description">Description</label>
                     <textarea v-model="post.description" class="form-control" id="description" rows="8" required
                         :disabled="isLoading"></textarea>
@@ -135,8 +137,12 @@ async function submitFeedback() {
                     Preview:
                     <div v-html="convertedDescription"></div>
 
-                </div>
+                </div> -->
 
+                <div class="m-form-group">
+                    <label>Description</label>
+                    <Editor v-model="post.description" editorStyle="height: 320px" />
+                </div>
 
                 <div v-show="errorMessage?.message" class="input-error">{{ errorMessage.message }}</div>
 
