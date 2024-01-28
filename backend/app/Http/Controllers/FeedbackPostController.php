@@ -11,7 +11,7 @@ class FeedbackPostController extends Controller
 
     public function getAll()
     {
-        return response()->json(FeedbackPost::with('user')->get());
+        return response()->json(FeedbackPost::with('user')->paginate());
     }
 
     public function getPostById(string $id)
@@ -21,7 +21,7 @@ class FeedbackPostController extends Controller
 
     public function getByUser()
     {
-        return response()->json(Auth::user()->feedbackPosts()->with('user')->get());
+        return response()->json(Auth::user()->feedbackPosts()->with('user')->paginate());
     }
 
     public function create(Request $request)

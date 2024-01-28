@@ -6,14 +6,51 @@ import { useAuthStore } from '../stores/auth';
 const auth = useAuthStore()
 const posts = ref([])
 const isLoading = ref(true)
+const feedbackData = ref({
+  data: [],
+  current_page: 1,
+  rows: 0,
+  total: 0,
+  per_page: 15,
+})
 
 async function fetchPosts() {
   isLoading.value = true
-  const res = await utils.networkRequest('/feedback')
+  const res = await utils.networkRequest(`/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`)
   isLoading.value = false
-  if (res.status === 200) {
-    posts.value = await res.json()
+  if (res.ok) {
+    feedbackData.value = await res.json()
+    const links = feedbackData.value.links
+    feedbackData.value.links = links.map(link => {
+      if (link.label.includes('Previous')) {
+        link.label = 'Previous'
+      }
+
+      if (link.label.includes('Next')) {
+        link.label = 'Next'
+      }
+
+      return link
+    })
   }
+}
+
+function navigateToPage(link) {
+  if (link.active) return
+
+  switch (link.label) {
+    case 'Previous':
+      feedbackData.value.current_page--
+      break
+    case 'Next':
+      feedbackData.value.current_page++
+      break
+    default:
+      feedbackData.value.current_page = link.label
+      break
+  }
+  fetchPosts()
+  // feedbackData.value.current_page = link.
 }
 
 onMounted(() => {
@@ -24,13 +61,27 @@ onMounted(() => {
 
 <template>
   <div class="section">
-    <div v-show="isLoading" class="spinner-border center"></div>
+    <nav>
+      <ul class="pagination">
+        <template v-for="link in feedbackData.links" :key="link.label">
+          <li class="page-item" :class="{ disabled: !link.url }">
+            <a class="page-link" :class="{ active: link.active }" href="javascript:void(0)" @click="navigateToPage(link)">
+              {{ link.label }}
+            </a>
+          </li>
+        </template>
+      </ul>
+    </nav>
+
 
     <router-link :to="{ name: 'createFeedbackForm' }" v-if="auth.isAuth" type="button" class="btn btn-primary">Add
       Feedback</router-link>
 
-    <router-link v-for="post in posts" :to="{ name: 'feedbackThread', params: { id: post.id } }" :key="post.id"
-      class="m-card">
+    <div v-show="isLoading" class="spinner-border center"></div>
+
+
+    <router-link v-for="post in feedbackData.data" :to="{ name: 'feedbackThread', params: { id: post.id } }"
+      :key="post.id" class="m-card">
       <h4 class="m-card-title">{{ post.title }}</h4>
 
       <div class="m-card-subtitle">
@@ -59,6 +110,8 @@ a {
 .section {
   width: 100%;
   height: 100%;
+
+  margin-top: 1em;
 
   display: flex;
   flex-flow: column wrap;

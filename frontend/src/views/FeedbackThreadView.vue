@@ -5,10 +5,8 @@ import Swal from 'sweetalert2'
 import router from '@/router';
 import { marked } from 'marked'
 import Editor from 'primevue/editor'
-
-
-
 import { useAuthStore } from '@/stores/auth';
+
 const auth = useAuthStore()
 const post = ref({
     id: -1,
