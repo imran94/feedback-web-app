@@ -2,9 +2,10 @@
 import utils from '@/utils';
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth';
+import Paginator from 'primevue/paginator';
+
 
 const auth = useAuthStore()
-const posts = ref([])
 const isLoading = ref(true)
 const feedbackData = ref({
   data: [],
@@ -20,37 +21,58 @@ async function fetchPosts() {
   isLoading.value = false
   if (res.ok) {
     feedbackData.value = await res.json()
-    const links = feedbackData.value.links
-    feedbackData.value.links = links.map(link => {
-      if (link.label.includes('Previous')) {
-        link.label = 'Previous'
+    if (screen.width <= 600) {
+      // Shorten the number of page links to fit screen
+      const links = feedbackData.value.links
+      const newLinks = []
+
+      let currentPage = feedbackData.value.current_page
+      const currentPageIndex = links.findIndex(link => parseInt(link.label) === currentPage)
+      const prevOffset = currentPageIndex === links.length - 2 ? 4 : 2
+      for (let i = currentPageIndex - 1; i > 1; i--) {
+
+        newLinks.unshift(links[i])
+        if (newLinks.length >= prevOffset)
+          break
       }
 
-      if (link.label.includes('Next')) {
-        link.label = 'Next'
+      newLinks.push(links[currentPageIndex])
+
+      for (let i = currentPageIndex + 1; i < links.length - 1; i++) {
+        newLinks.push(links[i])
+        if (newLinks.length >= 5)
+          break
       }
 
-      return link
-    })
+      newLinks.unshift({
+        url: links[0].url,
+        label: '&laquo;',
+        active: links[0].active
+      })
+
+      newLinks.push({
+        url: links[links.length - 1].url,
+        label: '&raquo;',
+        active: links[links.length - 1].active
+      })
+
+      feedbackData.value.links = newLinks
+    }
   }
 }
 
 function navigateToPage(link) {
   if (link.active) return
 
-  switch (link.label) {
-    case 'Previous':
-      feedbackData.value.current_page--
-      break
-    case 'Next':
-      feedbackData.value.current_page++
-      break
-    default:
-      feedbackData.value.current_page = link.label
-      break
+  if (link.label.includes('&laquo;')) {
+    feedbackData.value.current_page--
+  } else if (link.label.includes('&raquo;')) {
+    feedbackData.value.current_page++
+  } else {
+    feedbackData.value.current_page = link.label
   }
+
   fetchPosts()
-  // feedbackData.value.current_page = link.
 }
 
 onMounted(() => {
@@ -65,9 +87,8 @@ onMounted(() => {
       <ul class="pagination">
         <template v-for="link in feedbackData.links" :key="link.label">
           <li class="page-item" :class="{ disabled: !link.url }">
-            <a class="page-link" :class="{ active: link.active }" href="javascript:void(0)" @click="navigateToPage(link)">
-              {{ link.label }}
-            </a>
+            <a class="page-link" :class="{ active: link.active }" href="javascript:void(0)" @click="navigateToPage(link)"
+              v-html="link.label" />
           </li>
         </template>
       </ul>
@@ -78,6 +99,7 @@ onMounted(() => {
       Feedback</router-link>
 
     <div v-show="isLoading" class="spinner-border center"></div>
+
 
 
     <router-link v-for="post in feedbackData.data" :to="{ name: 'feedbackThread', params: { id: post.id } }"
@@ -121,7 +143,7 @@ a {
 
 .m-card {
   width: 95%;
-  margin: 1em 0.5em;
+  margin-top: 1em;
   padding: 1em;
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .4);
   border-radius: 0.5em;

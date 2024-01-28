@@ -19,37 +19,62 @@ async function fetchPosts() {
     isLoading.value = false
     if (res.ok) {
         feedbackData.value = await res.json()
-        const links = feedbackData.value.links
-        feedbackData.value.links = links.map(link => {
-            if (link.label.includes('Previous')) {
-                link.label = 'Previous'
+        if (screen.width <= 600) {
+            // Shorten the number of page links to fit screen
+            const links = feedbackData.value.links
+            const newLinks = []
+
+            let currentPage = feedbackData.value.current_page
+            const currentPageIndex = links.findIndex(link => parseInt(link.label) === currentPage)
+            const prevOffset = currentPageIndex === links.length - 2 ? 4 : 2
+            for (let i = currentPageIndex - 1; i > 1; i--) {
+
+                newLinks.unshift(links[i])
+                if (newLinks.length >= prevOffset)
+                    break
             }
 
-            if (link.label.includes('Next')) {
-                link.label = 'Next'
+            newLinks.push(links[currentPageIndex])
+
+            for (let i = currentPageIndex + 1; i < links.length - 1; i++) {
+                newLinks.push(links[i])
+                if (newLinks.length >= 5)
+                    break
             }
 
-            return link
-        })
+            newLinks.unshift({
+                url: links[0].url,
+                label: '&laquo;',
+                active: links[0].active
+            })
+
+            newLinks.push({
+                url: links[links.length - 1].url,
+                label: '&raquo;',
+                active: links[links.length - 1].active
+            })
+
+            console.log('currentPageIndex', currentPageIndex)
+            console.log('currentPage', links[currentPageIndex])
+            console.log('newLinks', newLinks)
+
+            feedbackData.value.links = newLinks
+        }
     }
 }
 
 function navigateToPage(link) {
     if (link.active) return
 
-    switch (link.label) {
-        case 'Previous':
-            feedbackData.value.current_page--
-            break
-        case 'Next':
-            feedbackData.value.current_page++
-            break
-        default:
-            feedbackData.value.current_page = link.label
-            break
+    if (link.label.includes('&laquo;')) {
+        feedbackData.value.current_page--
+    } else if (link.label.includes('&raquo;')) {
+        feedbackData.value.current_page++
+    } else {
+        feedbackData.value.current_page = link.label
     }
+
     fetchPosts()
-    // feedbackData.value.current_page = link.
 }
 
 onMounted(() => {
@@ -65,9 +90,7 @@ onMounted(() => {
                 <template v-for="link in feedbackData.links" :key="link.label">
                     <li class="page-item" :class="{ disabled: !link.url }">
                         <a class="page-link" :class="{ active: link.active }" href="javascript:void(0)"
-                            @click="navigateToPage(link)">
-                            {{ link.label }}
-                        </a>
+                            @click="navigateToPage(link)" v-html="link.label" />
                     </li>
                 </template>
             </ul>
