@@ -10,17 +10,18 @@ import { useAuthStore } from '@/stores/auth';
 const auth = useAuthStore()
 const post = ref({
     id: -1,
-    title: "",
-    description: "",
-    category: "",
+    title: '',
+    description: '',
+    category: '',
     vote_count: 0,
     user_id: -1,
-    created_at: "",
-    updated_at: "",
-    user: { name: "" },
+    created_at: '',
+    updated_at: '',
+    user: { name: '' },
     comments: []
 })
 const userVote = ref({ isUpvote: null })
+const isVoting = ref(false)
 const isLoading = ref(true)
 const isSubmittingComment = ref(false)
 const ownComment = ref('')
@@ -44,22 +45,34 @@ async function fetchPostDetails() {
         } catch (err) { }
     }
 
-
     isLoading.value = false
 }
 
 async function vote(isUpvote) {
+    if (isVoting.value) {
+        return
+    }
+
     if (!auth.isAuth) {
         router.push({ name: 'login' })
         return
     }
 
+    isVoting.value = true
     userVote.value.isUpvote = isUpvote
-    const res = await utils.networkRequest(`/feedback/${post.value.id}/vote`, 'PUT', { isUpvote: isUpvote })
-
-    const mUserVote = await res.json()
-    userVote.value = { isUpvote: mUserVote.is_upvote }
-    post.value.vote_count = mUserVote.vote_count
+    try {
+        const res = await utils.networkRequest(
+            `/feedback/${post.value.id}/vote`,
+            'PUT',
+            { isUpvote: isUpvote }
+        )
+        const mUserVote = await res.json()
+        userVote.value = { isUpvote: mUserVote.is_upvote }
+        post.value.vote_count = mUserVote.vote_count
+    } catch (err) {
+        console.error(err)
+    }
+    isVoting.value = false
 }
 
 async function cancelVote() {
@@ -202,7 +215,6 @@ const domParser = new DOMParser()
 function isEmptyHtml(str) {
     let parsedString = domParser.parseFromString(str, 'text/html').body.textContent || '';
     return parsedString.trim() === ''
-
 }
 </script>
 
@@ -300,8 +312,7 @@ function isEmptyHtml(str) {
                         </ul>
                     </div>
                 </div>
-                <div class="m-card-main" v-html="comment.content">
-                </div>
+                <div class="m-card-main" v-html="comment.content" />
             </div>
 
             <template v-if="comment.isEditing">
@@ -362,21 +373,26 @@ a {
 .m-card-title,
 .m-card-subtitle {
     display: inline-flex;
-    justify-content: space-evenly;
-    align-items: space-evenly;
-}
-
-.m-card-main {
-    padding-top: 1em;
-    padding-bottom: 1em;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: baseline;
 }
 
 .m-card-subtitle {
     padding-top: 0.5em;
 }
 
+.m-card-title,
 .m-card-subtitle * {
-    padding-right: 5px;
+    padding-right: 0.5em;
+}
+
+.m-card-main {
+    padding: 1em 0em 0.5em 0em;
+    padding-bottom: 0.5em;
+    width: 100%;
+
+    border-top: 1px solid black;
 }
 
 .center {

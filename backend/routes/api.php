@@ -33,10 +33,11 @@ Route::middleware('auth:sanctum')->group(function () {
         return Auth::user();
     });
 
+    Route::get('/search', [FeedbackPostController::class, 'search']);
+    Route::get('/user/feedback', [FeedbackPostController::class, 'getByUser']);
     Route::post('/feedback', [FeedbackPostController::class, 'create']);
     Route::put('/feedback/{feedbackPost}', [FeedbackPostController::class, 'update']);
     Route::delete('/feedback/{feedbackPost}', [FeedbackPostController::class, 'delete']);
-    Route::get('/user/feedback', [FeedbackPostController::class, 'getByUser']);
 
     Route::post('/feedback/{feedbackPost}/comments', [CommentController::class, 'create']);
     Route::put('/comments/{comment}', [CommentController::class, 'update']);

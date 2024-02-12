@@ -2,7 +2,6 @@
 import utils from '@/utils';
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth';
-import Paginator from 'primevue/paginator';
 
 
 const auth = useAuthStore()
@@ -30,7 +29,6 @@ async function fetchPosts() {
       const currentPageIndex = links.findIndex(link => parseInt(link.label) === currentPage)
       const prevOffset = currentPageIndex === links.length - 2 ? 4 : 2
       for (let i = currentPageIndex - 1; i > 1; i--) {
-
         newLinks.unshift(links[i])
         if (newLinks.length >= prevOffset)
           break
@@ -83,16 +81,14 @@ onMounted(() => {
 
 <template>
   <div class="section">
-    <nav>
-      <ul class="pagination">
-        <template v-for="link in feedbackData.links" :key="link.label">
-          <li class="page-item" :class="{ disabled: !link.url }">
-            <a class="page-link" :class="{ active: link.active }" href="javascript:void(0)" @click="navigateToPage(link)"
-              v-html="link.label" />
-          </li>
-        </template>
-      </ul>
-    </nav>
+    <ul class="pagination">
+      <template v-for="link in feedbackData.links" :key="link.label">
+        <li class="page-item" :class="{ disabled: !link.url }">
+          <a class="page-link" :class="{ active: link.active }" href="javascript:void(0)" @click="navigateToPage(link)"
+            v-html="link.label" />
+        </li>
+      </template>
+    </ul>
 
 
     <router-link :to="{ name: 'createFeedbackForm' }" v-if="auth.isAuth" type="button" class="btn btn-primary">Add
@@ -119,6 +115,11 @@ onMounted(() => {
       <div class="m-card-subtitle">
         <i class="bi bi-hand-thumbs-up-fill"></i>
         <span>{{ post['vote_count'] }}</span>
+      </div>
+
+      <div class="m-card-subtitle">
+        <i class="bi bi-chat-left-fill"></i>
+        <span>{{ post['comments_count'] }}</span>
       </div>
     </router-link>
   </div>

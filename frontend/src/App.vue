@@ -6,6 +6,7 @@ import router from './router';
 import utils from './utils';
 
 const auth = useAuthStore()
+const searchTerm = ref('')
 
 async function getUser() {
   const res = await utils.networkRequest('/user')
@@ -15,6 +16,10 @@ async function getUser() {
     auth.isAdmin = data['is_admin']
     auth.userId = data.id
   }
+}
+
+function search() {
+  router.push({ name: 'search', query: { q: searchTerm.value } })
 }
 
 function logout() {
@@ -63,8 +68,8 @@ onMounted(() => {
           </div>
         </ul>
 
-        <form class="d-flex search-bar" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <form @submit.prevent="search" class="d-flex search-bar" role="search">
+          <input class="form-control me-2" v-model="searchTerm" type="search" placeholder="Search" required>
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
 

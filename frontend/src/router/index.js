@@ -44,6 +44,11 @@ const router = createRouter({
       path: '/feedback-form/:id',
       name: 'editFeedbackForm',
       component: () => import('../views/FeedbackFormView.vue')
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: () => import('@/views/SearchView.vue')
     }
   ]
 })

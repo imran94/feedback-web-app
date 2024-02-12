@@ -160,6 +160,14 @@ async function submitFeedback() {
 </template>
   
 <style scoped>
+.body {
+    width: 700px;
+    max-width: 95%;
+    border: 1px solid silver;
+    border-radius: 10px;
+    padding: 1em;
+}
+
 .section {
     display: flex;
     align-items: center;
@@ -172,14 +180,6 @@ async function submitFeedback() {
     width: 100%;
     text-align: center;
     margin-bottom: 1.5em;
-}
-
-.body {
-    width: 700px;
-    max-width: 95%;
-    border: 1px solid silver;
-    border-radius: 10px;
-    padding: 1em;
 }
 
 form {
