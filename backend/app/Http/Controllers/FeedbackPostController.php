@@ -11,23 +11,37 @@ class FeedbackPostController extends Controller
 
     public function getAll()
     {
-        return FeedbackPost::with('user')->withCount('comments')->paginate();
+        return FeedbackPost::with('user')
+            ->withCount('comments')
+            ->paginate();
     }
 
     public function getPostById(string $id)
     {
-        return FeedbackPost::with(['user', 'comments.user'])->find($id);
+        return FeedbackPost::with(['user', 'comments.user'])
+            ->find($id);
     }
 
     public function search(Request $request)
     {
-        $res = FeedbackPost::search($request->query('q'))->get();
+        $q = $request->query('q');
+        $res = FeedbackPost::with('user')
+            ->withCount('comments')
+            ->where('title', 'like', "%$q%")
+            ->orWhere('description', 'like', "%$q%")
+            ->orWhereHas('user', function ($query) use ($q) {
+                $query->where('name', 'like', "%$q%");
+            })
+            ->paginate();
         return response()->json($res);
     }
 
     public function getByUser()
     {
-        return Auth::user()->feedbackPosts()->with('user')->paginate();
+        return Auth::user()
+            ->feedbackPosts()
+            ->with('user')
+            ->paginate();
     }
 
     public function create(Request $request)
