@@ -42,7 +42,9 @@ async function fetchPostDetails() {
             const voteRes = await utils.networkRequest(`/feedback/${post.value.id}/vote`)
             const voteData = await voteRes.json()
             userVote.value = { isUpvote: voteData.is_upvote }
-        } catch (err) { }
+        } catch (err) {
+            const mute = err
+        }
     }
 
     isLoading.value = false
@@ -205,10 +207,6 @@ onMounted(() => {
 
 const convertedDescription = computed(() => {
     return marked.parse(post.value.description)
-})
-
-const convertedComment = computed(() => {
-    return marked.parse(ownComment.value)
 })
 
 const domParser = new DOMParser()

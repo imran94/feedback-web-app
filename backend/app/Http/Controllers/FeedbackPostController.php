@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FeedbackPost;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,16 +25,28 @@ class FeedbackPostController extends Controller
 
     public function search(Request $request)
     {
-        $q = $request->query('q');
+        $q = $request->input('search');
+        $categories = $request->input('categories');
         $res = FeedbackPost::with('user')
-            ->withCount('comments')
-            ->where('title', 'like', "%$q%")
-            ->orWhere('description', 'like', "%$q%")
-            ->orWhereHas('user', function ($query) use ($q) {
-                $query->where('name', 'like', "%$q%");
-            })
-            ->paginate();
-        return response()->json($res);
+            ->withCount('comments');
+        if (!empty($categories)) {
+            $res = $res->whereIn('category', $categories);
+        }
+        // $res = $res->where('title', 'like', "%$q%")
+        //     ->orWhere('description', 'like', "%$q%")
+        //     ->orWhereHas('user', function ($query) use ($q) {
+        //         $query->where('name', 'like', "%$q%");
+        //     });
+
+        $res = $res->where(function (Builder $query) use ($q) {
+            $query->where('title', 'like', "%$q%")
+                ->orWhere('description', 'like', "%$q%")
+                ->orWhereHas('user', function ($query) use ($q) {
+                    $query->where('name', 'like', "%$q%");
+                });
+        });
+
+        return $res->paginate();
     }
 
     public function getByUser()

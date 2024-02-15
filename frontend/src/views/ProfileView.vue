@@ -98,9 +98,6 @@ onMounted(() => {
 
         <div v-show="isLoading" class="spinner-border center"></div>
 
-        <router-link :to="{ name: 'createFeedbackForm' }" v-if="auth.isAuth" type="button" class="btn btn-primary">Add
-            Feedback</router-link>
-
         <router-link v-for="post in feedbackData.data" :to="{ name: 'feedbackThread', params: { id: post.id } }"
             :key="post.id" class="m-card">
             <h4 class="m-card-title">{{ post.title }}</h4>

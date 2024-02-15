@@ -19,20 +19,6 @@ const post = ref({
     description: '',
     category: ''
 })
-const categories = [
-    'Product Feedback',
-    'Feature Requests',
-    'Bug Reports',
-    'Customer Reviews & In-app Ratings',
-    'Complaints & Questions',
-    'Praise & Appreciation Posts',
-    'Customer Surveys',
-    'Net Promoter Score (NPS) Surveys',
-    'Customer Satisfaction Survey',
-    'Customer Effort Score Feedback',
-    'Sales Objections & Feedback',
-    'Customer Churn Feedback'
-]
 
 onMounted(() => {
     const feedbackId = location.pathname.split('/')[2]
@@ -117,7 +103,8 @@ async function submitFeedback() {
                     <select id="categorySelect" v-model="post.category" class="form-select form-select-sm" required
                         :disabled="isLoading">
                         <option disabled value="">Please select one</option>
-                        <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
+                        <option v-for="category in utils.getCategories()" :key="category" :value="category">{{ category }}
+                        </option>
                     </select>
                 </div>
 

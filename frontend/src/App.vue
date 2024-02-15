@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from './stores/auth';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import router from './router';
 import utils from './utils';
 
@@ -20,11 +20,14 @@ async function getUser() {
 
 function search() {
   router.push({ name: 'search', query: { q: searchTerm.value } })
+  searchTerm.value = ''
 }
 
 function logout() {
   auth.clearAll()
 }
+
+const isOnSearchPage = computed(() => router.currentRoute.value.name !== 'search')
 
 onMounted(() => {
   if (auth.isAuth) {
@@ -54,7 +57,7 @@ onMounted(() => {
           </li>
 
           <li class="nav-item" v-show="auth.isAuth">
-            <RouterLink to="/profile" class="nav-link" :class="{ active: router.currentRoute.value.name == 'profile' }">
+            <RouterLink to="/profile" class="nav-link" :class="{ active: router.currentRoute.value.name === 'profile' }">
               Profile
             </RouterLink>
           </li>
@@ -68,12 +71,16 @@ onMounted(() => {
           </div>
         </ul>
 
-        <form @submit.prevent="search" class="d-flex search-bar" role="search">
+        <router-link :to="{ name: 'createFeedbackForm' }" v-if="auth.isAuth" type="button"
+          class="btn btn-primary add-button d-flex right-nav-item"><i class="bi bi-plus"></i> Add Feedback</router-link>
+
+        <form v-if="router.currentRoute.value.name !== 'search'" @submit.prevent="search"
+          class="d-flex search-bar right-nav-item" role="search">
           <input class="form-control me-2" v-model="searchTerm" type="search" placeholder="Search" required>
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
 
-        <div class="nav-item" v-show="auth.isAuth">
+        <div class="right-nav-item" v-show="auth.isAuth">
           <a href="javascript:void(0)" class="nav-link" @click="logout">Log Out</a>
         </div>
         <!-- <form class="d-flex" role="search">
@@ -90,5 +97,9 @@ onMounted(() => {
 <style scoped>
 .search-bar {
   margin-right: 1em;
+}
+
+.right-nav-item {
+  margin: 0.1em 0.2em;
 }
 </style>

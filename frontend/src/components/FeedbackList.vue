@@ -1,6 +1,7 @@
 <script setup>
 
 defineProps(['feedbackData'])
+defineEmits(['page-no-clicked'])
 </script>
 
 <template>

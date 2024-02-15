@@ -84,11 +84,7 @@ onMounted(() => {
 <template>
   <div class="section">
 
-    <router-link :to="{ name: 'createFeedbackForm' }" v-if="auth.isAuth" type="button"
-      class="btn btn-primary add-button">Add
-      Feedback</router-link>
-
-    <div v-show="isLoading" class="spinner-border center"></div>
+    <div v-show="feedbackData.data.length === 0" class="spinner-border center"></div>
 
     <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />
   </div>
@@ -100,8 +96,7 @@ a {
 }
 
 .section {
-  width: 100%;
-  height: 100%;
+  padding: 1em 0em;
 
   display: flex;
   flex-flow: column wrap;
