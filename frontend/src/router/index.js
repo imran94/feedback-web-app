@@ -31,6 +31,11 @@ const router = createRouter({
       component: () => import('../views/RegistrationView.vue')
     },
     {
+      path: '/registration-success',
+      name: 'registrationSuccess',
+      component: () => import('@/views/RegistrationSuccessView.vue')
+    },
+    {
       path: '/feedback/:id',
       name: 'feedbackThread',
       component: () => import('../views/FeedbackThreadView.vue')

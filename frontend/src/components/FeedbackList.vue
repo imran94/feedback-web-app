@@ -1,7 +1,12 @@
 <script setup>
+import { computed } from 'vue'
 
 defineProps(['feedbackData'])
 defineEmits(['page-no-clicked'])
+
+function formattedDate(date) {
+  return new Date(date).toLocaleString()
+}
 </script>
 
 <template>
@@ -36,6 +41,11 @@ defineEmits(['page-no-clicked'])
     <div class="m-card-subtitle">
       <i class="bi bi-chat-left-fill"></i>
       <span>{{ post['comments_count'] }}</span>
+    </div>
+
+    <div class="m-card-subtitle">
+    <i class="bi bi-calendar"></i>
+    <span>{{ formattedDate(post['created_at']) }}</span>
     </div>
   </router-link>
 

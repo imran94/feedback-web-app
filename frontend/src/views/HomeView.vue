@@ -1,9 +1,8 @@
 <script setup>
-import utils from '@/utils';
+import utils from '@/utils'
 import { ref, onMounted } from 'vue'
-import { useAuthStore } from '../stores/auth';
-import FeedbackList from '@/components/FeedbackList.vue';
-
+import { useAuthStore } from '../stores/auth'
+import FeedbackList from '@/components/FeedbackList.vue'
 
 const auth = useAuthStore()
 const isLoading = ref(true)
@@ -12,12 +11,14 @@ const feedbackData = ref({
   current_page: 1,
   rows: 0,
   total: 0,
-  per_page: 15,
+  per_page: 15
 })
 
 async function fetchPosts() {
   isLoading.value = true
-  const res = await utils.networkRequest(`/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`)
+  const res = await utils.networkRequest(
+    `/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`
+  )
   isLoading.value = false
   if (res.ok) {
     feedbackData.value = await res.json()
@@ -27,20 +28,18 @@ async function fetchPosts() {
       const newLinks = []
 
       let currentPage = feedbackData.value.current_page
-      const currentPageIndex = links.findIndex(link => parseInt(link.label) === currentPage)
+      const currentPageIndex = links.findIndex((link) => parseInt(link.label) === currentPage)
       const prevOffset = currentPageIndex === links.length - 2 ? 4 : 2
       for (let i = currentPageIndex - 1; i > 1; i--) {
         newLinks.unshift(links[i])
-        if (newLinks.length >= prevOffset)
-          break
+        if (newLinks.length >= prevOffset) break
       }
 
       newLinks.push(links[currentPageIndex])
 
       for (let i = currentPageIndex + 1; i < links.length - 1; i++) {
         newLinks.push(links[i])
-        if (newLinks.length >= 5)
-          break
+        if (newLinks.length >= 5) break
       }
 
       newLinks.unshift({
@@ -60,8 +59,7 @@ async function fetchPosts() {
   }
 }
 
-function navigateToPage(link) {
-
+async function navigateToPage(link) {
   if (link.active) return
 
   if (link.label.includes('&laquo;')) {
@@ -72,18 +70,21 @@ function navigateToPage(link) {
     feedbackData.value.current_page = link.label
   }
 
-  fetchPosts()
+  await fetchPosts()
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
+  })
 }
 
 onMounted(() => {
   fetchPosts()
-});
-
+})
 </script>
 
 <template>
   <div class="section">
-
     <div v-show="feedbackData.data.length === 0" class="spinner-border center"></div>
 
     <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />

@@ -2,7 +2,6 @@
 import { onMounted, ref, watch } from 'vue';
 import utils from '@/utils';
 import FeedbackList from '@/components/FeedbackList.vue';
-import router from '@/router';
 
 
 const searchTerm = ref('')
