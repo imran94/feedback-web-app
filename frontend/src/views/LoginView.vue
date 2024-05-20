@@ -98,11 +98,10 @@ async function tryLogin() {
 .title {
   width: 100%;
   text-align: center;
-  margin-bottom: 1.5em;
 }
 
 .body {
-  width: 500px;
+  min-width: 500px;
   border: 1px solid silver;
   border-radius: 3%;
   padding: 1em;
@@ -112,11 +111,12 @@ form {
   display: flex;
   flex-flow: column wrap;
   align-items: center;
+
+  row-gap: 1rem;
 }
 
 .m-form-group {
   width: 100%;
-  margin-bottom: 2em;
 }
 
 .input-error {

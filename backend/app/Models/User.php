@@ -38,6 +38,11 @@ class User extends Authenticatable
         'email_verification_code'
     ];
 
+    public function getAuthPasswordName()
+    {
+        return 'password';
+    }
+
     /**
      * The attributes that should be cast.
      *

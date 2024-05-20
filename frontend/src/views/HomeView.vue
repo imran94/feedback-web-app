@@ -3,6 +3,7 @@ import utils from '@/utils'
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import FeedbackList from '@/components/FeedbackList.vue'
+import axios from 'axios'
 
 const auth = useAuthStore()
 const isLoading = ref(true)
@@ -78,8 +79,16 @@ async function navigateToPage(link) {
   })
 }
 
+async function fetchPostsAxios() {
+  const { data } = await axios.get(
+    `http://localhost:8000/api/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`
+  )
+  console.log(data)
+}
+
 onMounted(() => {
   fetchPosts()
+  fetchPostsAxios()
 })
 </script>
 
@@ -106,7 +115,10 @@ a {
 }
 
 .center {
-  margin: 10em;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  padding: 1rem;
 }
 
 .add-button {
