@@ -101,7 +101,7 @@ async function tryLogin() {
 }
 
 .body {
-  min-width: 500px;
+  width: 500px;
   border: 1px solid silver;
   border-radius: 3%;
   padding: 1em;
@@ -125,5 +125,11 @@ form {
   padding-top: 0.2em;
   padding-left: 0.5em;
   padding-bottom: 0.5em;
+}
+
+@media screen and (max-width: 500px) {
+  .body {
+    width: 100%;
+  }
 }
 </style>

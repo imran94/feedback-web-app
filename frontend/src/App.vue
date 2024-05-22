@@ -43,6 +43,9 @@ onMounted(() => {
 <template>
   <header class="header" id="header">
     <nav class="nav container">
+      <div class="nav-toggle" id="nav-toggle" @click="showMenu = true">
+        <i class="bi bi-list"></i>
+      </div>
       <RouterLink
         to="/"
         class="nav-link"
@@ -52,12 +55,16 @@ onMounted(() => {
       </RouterLink>
 
       <div class="nav-menu" :class="{ 'show-menu': showMenu }">
+        <div class="nav-close" @click="showMenu = false">
+          <i class="bi bi-x"></i>
+        </div>
         <ul class="nav-list">
           <li class="nav-item" v-if="auth.isAuth">
             <router-link
               :to="{ name: 'createFeedbackForm' }"
               type="button"
               class="btn btn-primary add-button"
+              @click="showMenu = false"
             >
               <i class="bi bi-plus"></i>
               <span>Add Feedback</span>
@@ -69,6 +76,7 @@ onMounted(() => {
               to="/"
               class="nav-link"
               :class="{ active: router.currentRoute.value.name === 'home' }"
+              @click="showMenu = false"
             >
               <i class="bi bi-house"></i>
               <span>Home</span>
@@ -80,6 +88,7 @@ onMounted(() => {
               to="/profile"
               class="nav-link"
               :class="{ active: router.currentRoute.value.name === 'profile' }"
+              @click="showMenu = false"
             >
               <i class="bi bi-person"></i>
               <span>Profile</span>
@@ -91,6 +100,7 @@ onMounted(() => {
               to="/login"
               class="nav-link"
               :class="{ active: router.currentRoute.value.name === 'login' }"
+              @click="showMenu = false"
             >
               <i class="bi bi-box-arrow-in-right"></i>
               <span>Login</span>
@@ -102,6 +112,7 @@ onMounted(() => {
               to="/register"
               class="nav-link"
               :class="{ active: router.currentRoute.value.name === 'register' }"
+              @click="showMenu = false"
             >
               <i class="bi bi-person-fill-add"></i>
               <span>Sign Up</span>
@@ -115,14 +126,6 @@ onMounted(() => {
             </a>
           </li>
         </ul>
-
-        <div class="nav-close" @click="showMenu = false">
-          <i class="bi bi-x"></i>
-        </div>
-      </div>
-
-      <div class="nav-toggle" id="nav-toggle" @click="showMenu = true">
-        <i class="bi bi-list"></i>
       </div>
     </nav>
   </header>
@@ -217,6 +220,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.nav-toggle {
+  padding: 0rem 1rem;
+}
+
 .search-bar {
   margin-right: 1em;
 }
@@ -272,7 +279,8 @@ nav {
 .nav-menu {
   height: 100%;
   display: flex;
-  flex-flow: row nowrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
 
 .nav-list {
@@ -333,5 +341,77 @@ nav {
 
 .active {
   color: var(--white-color);
+}
+
+@media screen and (max-width: 1150px) {
+  nav {
+    justify-content: flex-start;
+  }
+
+  .nav-menu {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    background-color: var(--black-color);
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem 1rem;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: left 0.4s;
+  }
+
+  .nav-list {
+    flex-direction: column;
+  }
+
+  .nav-item {
+    transform: translateX(-150px);
+    visibility: hidden;
+    transition:
+      transform 0.4s ease-out,
+      visibility 0.4s;
+  }
+
+  .nav-item:nth-child(1) {
+    transition-delay: 0.1s;
+  }
+
+  .nav-item:nth-child(2) {
+    transition-delay: 0.2s;
+  }
+
+  .nav-item:nth-child(3) {
+    transition-delay: 0.3s;
+  }
+
+  .nav-item:nth-child(4) {
+    transition-delay: 0.4s;
+  }
+
+  .nav-item:nth-child(5) {
+    transition-delay: 0.5s;
+  }
+
+  .nav-link i {
+    visibility: visible;
+  }
+
+  .nav-close,
+  .nav-toggle {
+    display: flex;
+    color: var(--white-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .show-menu {
+    left: 0;
+  }
+
+  .show-menu .nav-item {
+    visibility: visible;
+    transform: translateX(0);
+  }
 }
 </style>
