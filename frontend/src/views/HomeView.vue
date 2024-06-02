@@ -15,14 +15,17 @@ const feedbackData = ref({
   per_page: 15
 })
 
+const baseUrl = import.meta.env.VITE_BACKEND_URL
+
 async function fetchPosts() {
   isLoading.value = true
-  const res = await utils.networkRequest(
+  const { response, data } = await utils.customFetch(
     `/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`
   )
   isLoading.value = false
-  if (res.ok) {
-    feedbackData.value = await res.json()
+  if (response.ok) {
+    feedbackData.value = data
+    console.log(feedbackData.value)
     if (screen.width <= 600) {
       // Shorten the number of page links to fit screen
       const links = feedbackData.value.links
@@ -79,16 +82,8 @@ async function navigateToPage(link) {
   })
 }
 
-async function fetchPostsAxios() {
-  const { data } = await axios.get(
-    `http://localhost:8000/api/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`
-  )
-  console.log(data)
-}
-
 onMounted(() => {
   fetchPosts()
-  fetchPostsAxios()
 })
 </script>
 

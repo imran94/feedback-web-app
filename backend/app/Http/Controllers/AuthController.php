@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TokenAbility;
 use App\Mail\EmailAddressConfirmation;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -15,7 +18,7 @@ use function PHPUnit\Framework\isNull;
 
 class AuthController extends Controller
 {
-    public function register(Request $request): JsonResponse
+    public function register(Request $request): Response
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -38,8 +41,8 @@ class AuthController extends Controller
 
         Mail::to($user->email)->send(new EmailAddressConfirmation($user));
 
-        return response()->json([
-            'name' => $user->name,
+        return response([
+            'name' => $user->name
         ]);
     }
 
@@ -56,10 +59,13 @@ class AuthController extends Controller
 
         $user = User::where('email', $request['email'])->firstOrFail();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $accessToken = $this->createAccessToken($user)->plainTextToken;
+
+        $refreshToken = $this->createRefreshToken($user)->plainTextToken;
 
         return response()->json([
-            'accessToken' => $token,
+            'accessToken' => $accessToken,
+            'refreshToken' => $refreshToken,
             'name' => $user->name,
             'isAdmin' => $user->isAdmin,
             'userId' => $user->id
@@ -82,5 +88,42 @@ class AuthController extends Controller
     public function showEmailVerificationView()
     {
         return view('emails.emailAddressConfirmation', ['user' => User::first()]);
+    }
+
+    public function getCurrentUser()
+    {
+        return Auth::user();
+    }
+
+    public function refreshToken(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response([
+            'accessToken' => $this->createAccessToken($request->user())->plainTextToken,
+            'refreshToken' => $this->createRefreshToken($request->user())->plainTextToken
+        ]);
+    }
+
+    private function createAccessToken(User $user)
+    {
+        return $user->createToken(
+            'refresh_token',
+            [TokenAbility::ACCESS_API->value],
+            Carbon::now()->addMinutes(
+                config('sanctum.refresh_token_expiration')
+            )
+        );
+    }
+
+    private function createRefreshToken(User $user)
+    {
+        return $user->createToken(
+            'refresh_token',
+            [TokenAbility::ISSUE_ACCESS_TOKEN->value],
+            Carbon::now()->addMinutes(
+                config('sanctum.refresh_token_expiration')
+            )
+        );
     }
 }

@@ -14,17 +14,17 @@ const errorMessage = ref({})
 async function tryLogin() {
   isLoading.value = true
   try {
-    const response = await utils.networkRequest('/authenticate', 'POST', {
+    const { response, data } = await utils.customFetch('/authenticate', 'POST', {
       email: email.value,
       password: password.value
     })
-    const data = await response.json()
-    if (response.status === 200) {
-      localStorage.setItem('accessToken', data.accessToken)
-      auth.isAuth = true
-      auth.name = data.name
-      auth.isAdmin = data.isAdmin
-      auth.userId = data.userId
+    if (response.ok) {
+      auth.setUser(data)
+      // auth.setTokens(data.accessToken, data.refreshToken)
+      // auth.isAuth = true
+      // auth.name = data.name
+      // auth.isAdmin = data.isAdmin
+      // auth.userId = data.userId
 
       router.push({ name: 'home' })
     } else {

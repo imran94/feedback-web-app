@@ -28,9 +28,9 @@ const ownComment = ref('')
 
 async function fetchPostDetails() {
   isLoading.value = true
-  const res = await utils.networkRequest(location.pathname)
-  if (res.status === 200) {
-    post.value = await res.json()
+  const { response, data } = await utils.customFetch(location.pathname)
+  if (response.status === 200) {
+    post.value = data
     post.value.comments = post.value.comments.map((comment) => {
       comment.content = marked.parse(comment.content)
       comment.isEditing = false
@@ -39,9 +39,8 @@ async function fetchPostDetails() {
     })
     post.value.description = marked.parse(post.value.description)
     try {
-      const voteRes = await utils.networkRequest(`/feedback/${post.value.id}/vote`)
-      const voteData = await voteRes.json()
-      userVote.value = { isUpvote: voteData.is_upvote }
+      const voteRes = await utils.customFetch(`/feedback/${post.value.id}/vote`)
+      userVote.value = { isUpvote: voteRes.data.is_upvote }
     } catch (err) {
       const mute = err
     }
@@ -63,10 +62,10 @@ async function vote(isUpvote) {
   isVoting.value = true
   userVote.value.isUpvote = isUpvote
   try {
-    const res = await utils.networkRequest(`/feedback/${post.value.id}/vote`, 'PUT', {
+    const { response, data } = await utils.customFetch(`/feedback/${post.value.id}/vote`, 'PUT', {
       isUpvote: isUpvote
     })
-    const mUserVote = await res.json()
+    const mUserVote = data
     userVote.value = { isUpvote: mUserVote.is_upvote }
     post.value.vote_count = mUserVote.vote_count
   } catch (err) {
@@ -78,10 +77,9 @@ async function vote(isUpvote) {
 async function cancelVote() {
   userVote.value = {}
 
-  const res = await utils.networkRequest(`/feedback/${post.value.id}/vote`, 'DELETE')
+  const { response, data } = await utils.customFetch(`/feedback/${post.value.id}/vote`, 'DELETE')
 
-  const mUserVote = await res.json()
-  post.value.vote_count = mUserVote.vote_count
+  post.value.vote_count = data.vote_count
 }
 
 async function deletePost() {
@@ -98,7 +96,7 @@ async function deletePost() {
     return
   }
 
-  await utils.networkRequest(`/feedback/${post.value.id}`, 'DELETE')
+  await utils.customFetch(`/feedback/${post.value.id}`, 'DELETE')
 
   Swal.fire({
     title: 'Deleted!',
@@ -112,19 +110,22 @@ async function submitNewComment() {
   if (isEmptyHtml(ownComment.value)) return
 
   isSubmittingComment.value = true
-  const res = await utils.networkRequest(`/feedback/${post.value.id}/comments`, 'POST', {
-    content: ownComment.value
-  })
+  const { response, data } = await utils.customFetch(
+    `/feedback/${post.value.id}/comments`,
+    'POST',
+    {
+      content: ownComment.value
+    }
+  )
 
   ownComment.value = ''
   isSubmittingComment.value = false
 
-  const isSuccess = res.status === 200
+  const isSuccess = response.status === 200
   if (isSuccess) {
-    const newComment = await res.json()
-    newComment.editedComment = newComment.content
+    data.editedComment = data.content
     const comments = post.value.comments
-    comments.push(newComment)
+    comments.push(data)
     post.value.comments = comments
   }
   Swal.fire({
@@ -145,11 +146,14 @@ async function updateComment(comment) {
 
   // comment.content = comment.editedComment
 
-  const res = await utils.networkRequest(`/comments/${comment.id}`, 'PUT', updatedComment)
-  const isSuccess = res.status === 200
+  const { response, data } = await utils.customFetch(
+    `/comments/${comment.id}`,
+    'PUT',
+    updatedComment
+  )
+  const isSuccess = response.status === 200
   if (isSuccess) {
-    updatedComment = await res.json()
-    comment.content = updatedComment.content
+    comment.content = data.content
     comment.isEditing = false
     comment.editedComment = comment.content
 
@@ -181,7 +185,7 @@ async function deleteComment(comment) {
     return
   }
 
-  await utils.networkRequest(`/comments/${comment.id}`, 'DELETE')
+  await utils.customFetch(`/comments/${comment.id}`, 'DELETE')
 
   Swal.fire({
     title: 'Deleted!',
@@ -399,6 +403,7 @@ a {
   width: 100%;
   justify-content: flex-start;
   align-items: baseline;
+  column-gap: 0.75em;
 }
 
 .m-card-subtitle {
@@ -407,7 +412,7 @@ a {
 
 .m-card-title,
 .m-card-subtitle * {
-  padding-right: 0.5em;
+  /* padding-right: 0.5em; */
 }
 
 .m-card-main {

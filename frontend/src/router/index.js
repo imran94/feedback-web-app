@@ -1,17 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { useAuthStore } from '../stores/auth'
-import axios from 'axios'
 
-axios.interceptors.request.use(
-  request => {
-    const accessToken = localStorage.getItem('accessToken')
-    if (accessToken) {
-      request.headers['Authorization'] = `Bearer ${accessToken}`
-    }
-    return request
-  }
-)
+let authStore = null
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,6 +56,11 @@ const router = createRouter({
       path: '/search',
       name: 'search',
       component: () => import('@/views/SearchView.vue')
+    },
+    {
+      path: '/verify-email-address/:code',
+      name: 'verifyEmailAddress',
+      component: () => import('@/views/VerifyEmailView.vue')
     }
   ]
 })
@@ -72,9 +68,13 @@ const router = createRouter({
 export default router
 
 router.beforeEach((to, from, next) => {
-  if (to.name === 'login' && useAuthStore().isAuth) next({ name: 'home' })
-  else if (to.name === 'profile' && !useAuthStore().isAuth) next({ name: 'login' })
-  else if (to.name === 'createFeedbackForm' && !useAuthStore().isAuth) next({ name: 'login' })
-  else if (to.name === 'editFeedbackForm' && !useAuthStore().isAuth) next({ name: 'login' })
+  if (!authStore) {
+    authStore = useAuthStore()
+  }
+
+  if (to.name === 'login' && authStore.isAuthenticated) next({ name: 'home' })
+  else if (to.name === 'profile' && !authStore.isAuthenticated) next({ name: 'login' })
+  else if (to.name === 'createFeedbackForm' && !authStore.isAuthenticated) next({ name: 'login' })
+  else if (to.name === 'editFeedbackForm' && !authStore.isAuthenticated) next({ name: 'login' })
   else next()
 })

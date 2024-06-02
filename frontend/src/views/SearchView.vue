@@ -26,7 +26,7 @@ async function search() {
     searchCategories.value.filter((c) => c.isSelected).map((c) => c.name)
   )
 
-  const res = await utils.networkRequest(
+  const { response, data } = await utils.customFetch(
     `/search?page=${feedbackData.value.current_page}`,
     'POST',
     {
@@ -34,8 +34,8 @@ async function search() {
       categories: searchCategories.value.filter((c) => c.isSelected).map((c) => c.name)
     }
   )
-  if (res.ok) {
-    feedbackData.value = await res.json()
+  if (response.ok) {
+    feedbackData.value = data
     if (screen.width > 600) {
       return
     }

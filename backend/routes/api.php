@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TokenAbility;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FeedbackPostController;
@@ -28,10 +29,23 @@ Route::post('/authenticate', [AuthController::class, 'authenticate']);
 Route::get('/feedback/{id}', [FeedbackPostController::class, 'getPostById']);
 Route::get('/feedback', [FeedbackPostController::class, 'getAll']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function () {
-        return Auth::user();
-    });
+Route::get('/error', function () {
+    // return response()->json(["nigga" =>"Nigga"]);
+    return response(['nigga' => 'nigga'], 415);
+});
+
+Route::middleware(
+    'auth:sanctum',
+    'ability:' . TokenAbility::ISSUE_ACCESS_TOKEN->value
+)->group(function () {
+    Route::get('/user/refresh-token', [AuthController::class, 'refreshToken']);
+});
+
+Route::middleware(
+    'auth:sanctum',
+    'ability:' . TokenAbility::ACCESS_API->value
+)->group(function () {
+    Route::get('/user', [AuthController::class, 'getCurrentUser']);
 
     Route::post('/search', [FeedbackPostController::class, 'search']);
     Route::get('/user/feedback', [FeedbackPostController::class, 'getByUser']);

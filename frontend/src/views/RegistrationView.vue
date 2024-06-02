@@ -16,19 +16,13 @@ const errorMessage = ref('')
 async function register() {
   try {
     isLoading.value = true
-    const response = await utils.networkRequest('/register', 'POST', {
+    const { response, data } = await utils.customFetch('/register', 'POST', {
       name: name.value,
       email: email.value,
       password: password.value
     })
-    const data = await response.json()
-    if (response.status === 200) {
-      localStorage.setItem('accessToken', data.accessToken)
-      auth.isAuth = true
+    if (response.ok) {
       auth.name = data.name
-      auth.isAdmin = data.isAdmin
-      auth.userId = data.userId
-
       router.push({ name: 'registrationSuccess' })
     } else {
       errorMessage.value = data
