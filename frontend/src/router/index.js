@@ -72,9 +72,9 @@ router.beforeEach((to, from, next) => {
     authStore = useAuthStore()
   }
 
-  if (to.name === 'login' && authStore.isAuthenticated) next({ name: 'home' })
-  else if (to.name === 'profile' && !authStore.isAuthenticated) next({ name: 'login' })
-  else if (to.name === 'createFeedbackForm' && !authStore.isAuthenticated) next({ name: 'login' })
-  else if (to.name === 'editFeedbackForm' && !authStore.isAuthenticated) next({ name: 'login' })
+  if (to.name === 'login' && authStore.isAuth) next({ name: 'home' })
+  else if (to.name === 'profile' && !authStore.isAuth) next({ name: 'login' })
+  else if (to.name === 'createFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
+  else if (to.name === 'editFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
   else next()
 })

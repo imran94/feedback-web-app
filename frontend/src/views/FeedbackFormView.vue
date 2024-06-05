@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import Swal from 'sweetalert2'
-import utils from '../utils'
+import { customFetch, categories } from '../utils'
 import router from '@/router'
 import { marked } from 'marked'
 import Editor from 'primevue/editor'
@@ -32,7 +32,7 @@ const convertedDescription = computed(() => {
 
 async function fetchPost(postId) {
   isLoading.value = true
-  const { response, data } = await utils.customFetch(`/feedback/${postId}`)
+  const { response, data } = await customFetch(`/feedback/${postId}`)
   if (response.status === 200) {
     // posts.value = await res.json()
     post.value = data
@@ -57,7 +57,7 @@ async function submitFeedback() {
   const endpoint = `/feedback/${post.value.id ?? ''}`
   const method = post.value.id ? 'PUT' : 'POST'
   try {
-    const { response, data } = await utils.customFetch(endpoint, method, post.value)
+    const { response, data } = await customFetch(endpoint, method, post.value)
     if (response.status === 200) {
       const mPost = data
       Swal.fire({
@@ -103,7 +103,7 @@ async function submitFeedback() {
             :disabled="isLoading"
           >
             <option disabled value="">Please select one</option>
-            <option v-for="category in utils.getCategories()" :key="category" :value="category">
+            <option v-for="category in categories" :key="category" :value="category">
               {{ category }}
             </option>
           </select>

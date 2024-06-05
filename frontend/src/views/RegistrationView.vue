@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import utils from '../utils'
+import { customFetch } from '../utils'
 import { useAuthStore } from '../stores/auth'
 import router from '@/router'
 
@@ -16,7 +16,7 @@ const errorMessage = ref('')
 async function register() {
   try {
     isLoading.value = true
-    const { response, data } = await utils.customFetch('/register', 'POST', {
+    const { response, data } = await customFetch('/register', 'POST', {
       name: name.value,
       email: email.value,
       password: password.value

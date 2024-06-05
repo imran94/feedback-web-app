@@ -7,7 +7,7 @@ const auth = useAuthStore()
 <template>
   <div class="body">
     <h1>
-      Thank you for signing up<span v-if="auth.name">, {{ auth.name }}</span
+      Thank you for signing up<span v-if="auth.username">, {{ auth.username }}</span
       >!
     </h1>
     <div>A confirmation email has been sent to your email address.</div>

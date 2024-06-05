@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import utils from '../utils'
+import { customFetch } from '../utils'
 import { useAuthStore } from '../stores/auth'
 import router from '@/router'
 
@@ -14,17 +14,12 @@ const errorMessage = ref({})
 async function tryLogin() {
   isLoading.value = true
   try {
-    const { response, data } = await utils.customFetch('/authenticate', 'POST', {
+    const { response, data } = await customFetch('/authenticate', 'POST', {
       email: email.value,
       password: password.value
     })
     if (response.ok) {
       auth.setUser(data)
-      // auth.setTokens(data.accessToken, data.refreshToken)
-      // auth.isAuth = true
-      // auth.name = data.name
-      // auth.isAdmin = data.isAdmin
-      // auth.userId = data.userId
 
       router.push({ name: 'home' })
     } else {

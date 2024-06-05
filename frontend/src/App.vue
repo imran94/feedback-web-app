@@ -3,14 +3,14 @@ import { RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, computed } from 'vue'
 import router from './router'
-import utils from './utils'
+import { customFetch, Enums } from './utils'
 
 const auth = useAuthStore()
 const searchTerm = ref('')
 const showMenu = ref(false)
 
 async function getUser() {
-  const { response, data } = await utils.customFetch('/user')
+  const { response, data } = await customFetch('/user')
   if (response.ok) {
     auth.setUser(data)
   }
@@ -31,9 +31,18 @@ function logout() {
 const isOnSearchPage = computed(() => router.currentRoute.value.name !== 'search')
 
 onMounted(() => {
-  if (auth.isAuthenticated) {
-    getUser()
-  }
+  auth.init()
+  console.log('localStorage.getItem(Enums.ACCESS_TOKEN)', localStorage.getItem(Enums.ACCESS_TOKEN))
+  console.log(
+    'localStorage.getItem(Enums.REFRESH_TOKEN)',
+    localStorage.getItem(Enums.REFRESH_TOKEN)
+  )
+
+  console.log('auth.isAuth: ', auth.isAuth)
+
+  // if (auth.isAuth) {
+  //   getUser()
+  // }
 })
 </script>
 
@@ -80,7 +89,7 @@ onMounted(() => {
             </RouterLink>
           </li>
 
-          <li class="nav-item" v-show="auth.isAuthenticated">
+          <li class="nav-item" v-show="auth.isAuth">
             <RouterLink
               to="/profile"
               class="nav-link"
@@ -92,7 +101,7 @@ onMounted(() => {
             </RouterLink>
           </li>
 
-          <li class="nav-item" v-show="!auth.isAuthenticated">
+          <li class="nav-item" v-show="!auth.isAuth">
             <RouterLink
               to="/login"
               class="nav-link"
@@ -104,7 +113,7 @@ onMounted(() => {
             </RouterLink>
           </li>
 
-          <li class="nav-item" v-show="!auth.isAuthenticated">
+          <li class="nav-item" v-show="!auth.isAuth">
             <RouterLink
               to="/register"
               class="nav-link"
@@ -116,7 +125,7 @@ onMounted(() => {
             </RouterLink>
           </li>
 
-          <li class="nav-item" v-show="auth.isAuthenticated">
+          <li class="nav-item" v-show="auth.isAuth">
             <a href="javascript:void(0)" class="nav-link" @click="logout">
               <i class="bi bi-box-arrow-left"></i>
               <span>Log Out</span>

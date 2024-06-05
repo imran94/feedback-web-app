@@ -1,5 +1,5 @@
 <script setup>
-import utils from '@/utils'
+import { customFetch } from '@/utils'
 import { ref, onMounted, computed } from 'vue'
 import Swal from 'sweetalert2'
 import router from '@/router'
@@ -28,7 +28,7 @@ const ownComment = ref('')
 
 async function fetchPostDetails() {
   isLoading.value = true
-  const { response, data } = await utils.customFetch(location.pathname)
+  const { response, data } = await customFetch(location.pathname)
   if (response.status === 200) {
     post.value = data
     post.value.comments = post.value.comments.map((comment) => {
@@ -39,7 +39,7 @@ async function fetchPostDetails() {
     })
     post.value.description = marked.parse(post.value.description)
     try {
-      const voteRes = await utils.customFetch(`/feedback/${post.value.id}/vote`)
+      const voteRes = await customFetch(`/feedback/${post.value.id}/vote`)
       userVote.value = { isUpvote: voteRes.data.is_upvote }
     } catch (err) {
       const mute = err
@@ -62,7 +62,7 @@ async function vote(isUpvote) {
   isVoting.value = true
   userVote.value.isUpvote = isUpvote
   try {
-    const { response, data } = await utils.customFetch(`/feedback/${post.value.id}/vote`, 'PUT', {
+    const { response, data } = await customFetch(`/feedback/${post.value.id}/vote`, 'PUT', {
       isUpvote: isUpvote
     })
     const mUserVote = data
@@ -77,7 +77,7 @@ async function vote(isUpvote) {
 async function cancelVote() {
   userVote.value = {}
 
-  const { response, data } = await utils.customFetch(`/feedback/${post.value.id}/vote`, 'DELETE')
+  const { response, data } = await customFetch(`/feedback/${post.value.id}/vote`, 'DELETE')
 
   post.value.vote_count = data.vote_count
 }
@@ -96,7 +96,7 @@ async function deletePost() {
     return
   }
 
-  await utils.customFetch(`/feedback/${post.value.id}`, 'DELETE')
+  await customFetch(`/feedback/${post.value.id}`, 'DELETE')
 
   Swal.fire({
     title: 'Deleted!',
@@ -110,13 +110,9 @@ async function submitNewComment() {
   if (isEmptyHtml(ownComment.value)) return
 
   isSubmittingComment.value = true
-  const { response, data } = await utils.customFetch(
-    `/feedback/${post.value.id}/comments`,
-    'POST',
-    {
-      content: ownComment.value
-    }
-  )
+  const { response, data } = await customFetch(`/feedback/${post.value.id}/comments`, 'POST', {
+    content: ownComment.value
+  })
 
   ownComment.value = ''
   isSubmittingComment.value = false
@@ -146,11 +142,7 @@ async function updateComment(comment) {
 
   // comment.content = comment.editedComment
 
-  const { response, data } = await utils.customFetch(
-    `/comments/${comment.id}`,
-    'PUT',
-    updatedComment
-  )
+  const { response, data } = await customFetch(`/comments/${comment.id}`, 'PUT', updatedComment)
   const isSuccess = response.status === 200
   if (isSuccess) {
     comment.content = data.content
@@ -185,7 +177,7 @@ async function deleteComment(comment) {
     return
   }
 
-  await utils.customFetch(`/comments/${comment.id}`, 'DELETE')
+  await customFetch(`/comments/${comment.id}`, 'DELETE')
 
   Swal.fire({
     title: 'Deleted!',

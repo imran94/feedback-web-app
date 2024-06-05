@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import utils from '@/utils'
+import { categories, customFetch } from '@/utils'
 import FeedbackList from '@/components/FeedbackList.vue'
 
 const searchTerm = ref('')
@@ -21,12 +21,7 @@ watch(searchTerm, async () => {
 })
 
 async function search() {
-  console.log(
-    'categories',
-    searchCategories.value.filter((c) => c.isSelected).map((c) => c.name)
-  )
-
-  const { response, data } = await utils.customFetch(
+  const { response, data } = await customFetch(
     `/search?page=${feedbackData.value.current_page}`,
     'POST',
     {
@@ -98,7 +93,7 @@ onMounted(() => {
   searchTerm.value = new URLSearchParams(location.search).get('q')
   search()
 
-  searchCategories.value = utils.getCategories().map((category) => {
+  searchCategories.value = categories.map((category) => {
     return {
       name: category,
       isSelected: false

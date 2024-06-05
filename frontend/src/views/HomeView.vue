@@ -1,11 +1,9 @@
 <script setup>
-import utils from '@/utils'
+import { customFetch } from '@/utils'
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import FeedbackList from '@/components/FeedbackList.vue'
-import axios from 'axios'
 
-const auth = useAuthStore()
 const isLoading = ref(true)
 const feedbackData = ref({
   data: [],
@@ -19,7 +17,7 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL
 
 async function fetchPosts() {
   isLoading.value = true
-  const { response, data } = await utils.customFetch(
+  const { response, data } = await customFetch(
     `/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`
   )
   isLoading.value = false
