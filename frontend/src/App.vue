@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, computed } from 'vue'
 import router from './router'
 import { customFetch, Enums } from './utils'
+import Swal from 'sweetalert2'
 
 const auth = useAuthStore()
 const searchTerm = ref('')
@@ -24,8 +25,29 @@ function search() {
   searchTerm.value = ''
 }
 
-function logout() {
+async function logout() {
+  const res = await Swal.fire({
+    title: 'Log Out',
+    text: 'Are you sure you want to log out?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes'
+  })
+  if (!res.isConfirmed) {
+    return
+  }
+
   auth.logout()
+  Swal.fire({
+    title: 'You have successfully logged out',
+    toast: true,
+    timer: 2000,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    icon: 'success'
+  })
 }
 
 const isOnSearchPage = computed(() => router.currentRoute.value.name !== 'search')
@@ -101,7 +123,7 @@ onMounted(() => {
             </RouterLink>
           </li>
 
-          <li class="nav-item" v-show="!auth.isAuth">
+          <li class="nav-item" v-show="!auth.isAuth && !auth.isLoading">
             <RouterLink
               to="/login"
               class="nav-link"
@@ -113,7 +135,7 @@ onMounted(() => {
             </RouterLink>
           </li>
 
-          <li class="nav-item" v-show="!auth.isAuth">
+          <li class="nav-item" v-show="!auth.isAuth && !auth.isLoading">
             <RouterLink
               to="/register"
               class="nav-link"

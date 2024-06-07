@@ -6,6 +6,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FeedbackPostController;
 use App\Http\Controllers\VoteController;
 use App\Models\FeedbackPost;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -28,11 +29,7 @@ Route::post('/authenticate', [AuthController::class, 'authenticate']);
 // Feedback Posts
 Route::get('/feedback/{id}', [FeedbackPostController::class, 'getPostById']);
 Route::get('/feedback', [FeedbackPostController::class, 'getAll']);
-
-Route::get('/error', function () {
-    // return response()->json(["nigga" =>"Nigga"]);
-    return response(['nigga' => 'nigga'], 415);
-});
+Route::delete('/user/logout', [AuthController::class, 'logout']);
 
 Route::middleware(
     'auth:sanctum',

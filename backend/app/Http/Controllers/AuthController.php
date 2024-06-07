@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Sanctum\PersonalAccessToken;
 
 use function PHPUnit\Framework\isNull;
 
@@ -105,6 +106,18 @@ class AuthController extends Controller
         ]);
     }
 
+    public function logout(Request $request)
+    {
+        if ($request->has('accessToken')) {
+            PersonalAccessToken::findToken($request->input('accessToken'))?->delete();
+        }
+        if ($request->has('refreshToken')) {
+            PersonalAccessToken::findToken($request->input('refreshToken'))?->delete();
+        }
+
+        return ['message' => 'Logged out successfully.'];
+    }
+
     private function createAccessToken(User $user)
     {
         return $user->createToken(
@@ -125,5 +138,11 @@ class AuthController extends Controller
                 config('sanctum.refresh_token_expiration')
             )
         );
+    }
+
+    private function revokePlaintextToken($user, string $token)
+    {
+        $tokenId = explode('|', $token)[0];
+        $user->tokens()->where('id', $tokenId)->delete();
     }
 }

@@ -26,10 +26,12 @@ const isLoading = ref(true)
 const isSubmittingComment = ref(false)
 const ownComment = ref('')
 
+const isOwnPost = computed(() => post.value?.user.id === auth.userId)
+
 async function fetchPostDetails() {
   isLoading.value = true
   const { response, data } = await customFetch(location.pathname)
-  if (response.status === 200) {
+  if (response.ok) {
     post.value = data
     post.value.comments = post.value.comments.map((comment) => {
       comment.content = marked.parse(comment.content)
@@ -44,6 +46,9 @@ async function fetchPostDetails() {
     } catch (err) {
       const mute = err
     }
+
+    console.log('post: ', post.value.user.id)
+    console.log('userId: ', auth.userId)
   }
 
   isLoading.value = false
@@ -117,20 +122,19 @@ async function submitNewComment() {
   ownComment.value = ''
   isSubmittingComment.value = false
 
-  const isSuccess = response.status === 200
-  if (isSuccess) {
+  if (response.ok) {
     data.editedComment = data.content
     const comments = post.value.comments
     comments.push(data)
     post.value.comments = comments
   }
   Swal.fire({
-    title: isSuccess ? 'Comment successfully created' : 'Failed to create comment',
+    title: response.ok ? 'Comment successfully created' : 'Failed to create comment',
     toast: true,
     timer: 2000,
     position: 'top-end',
     showConfirmButton: false,
-    icon: isSuccess ? 'success' : 'error'
+    icon: response.ok ? 'success' : 'error'
   })
 }
 
@@ -219,7 +223,7 @@ function isEmptyHtml(str) {
       <div class="m-card-header">
         <h4 class="m-card-title">{{ post.title }}</h4>
 
-        <div v-if="auth.isAdmin || post.user.id === auth.userId" class="dropdown">
+        <div v-if="auth.isAdmin || isOwnPost" class="dropdown">
           <button
             class="btn btn-secondary dropdown-toggle"
             type="button"

@@ -7,20 +7,18 @@ export const useAuthStore = defineStore('auth', () => {
   const username = ref(null)
   const userId = ref(null)
   const isAuth = ref(false)
+  const isLoading = ref(false)
 
   const init = async () => {
-    console.log('init')
     if (localStorage.getItem(Enums.ACCESS_TOKEN) && !isAuth.value) {
+      isLoading.value = true
       const { response, data } = await customFetch('/user')
-      console.log('get user response', response.status)
-      console.log('get user response data', data)
       if (response.ok) {
-        console.log('response ok. setting user')
         setUser(data)
       } else {
-        console.log('clearing storage')
         localStorage.clear()
       }
+      isLoading.value = false
     }
   }
 
@@ -42,12 +40,18 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const logout = () => {
+    const requestBody = {
+      accessToken: localStorage.getItem(Enums.ACCESS_TOKEN),
+      refreshToken: localStorage.getItem(Enums.REFRESH_TOKEN)
+    }
     localStorage.removeItem(Enums.ACCESS_TOKEN)
     localStorage.removeItem(Enums.REFRESH_TOKEN)
     isAdmin.value = false
     userId.value = null
     username.value = null
     isAuth.value = false
+
+    customFetch('/user/logout', 'DELETE', requestBody)
   }
 
   return {
