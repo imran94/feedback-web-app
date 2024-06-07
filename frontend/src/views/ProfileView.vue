@@ -4,7 +4,6 @@ import { ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import FeedbackList from '@/components/FeedbackList.vue'
 
-const auth = useAuthStore()
 const isLoading = ref(true)
 const isError = ref(false)
 
@@ -14,6 +13,11 @@ const feedbackData = ref({
   rows: 0,
   total: 0,
   per_page: 15
+})
+
+const authStore = useAuthStore()
+authStore.$subscribe((mutation, state) => {
+  console.log(state)
 })
 
 async function fetchPosts() {
@@ -84,54 +88,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="body">
+  <div class="section">
+    <div v-show="isLoading && feedbackData.data.length === 0" class="spinner-border center"></div>
+
+    <div v-show="feedbackData.data.length === 0 && !isLoading && !isError">
+      Looks like you haven't added any feedback.
+    </div>
+
     <div v-show="feedbackData.data.length === 0 && !isLoading && !isError">
       Looks like you haven't added any feedback.
     </div>
 
     <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />
-
-    <!-- <nav>
-      <ul class="pagination">
-        <template v-for="link in feedbackData.links" :key="link.label">
-          <li class="page-item" :class="{ disabled: !link.url }">
-            <a
-              class="page-link"
-              :class="{ active: link.active }"
-              href="javascript:void(0)"
-              @click="navigateToPage(link)"
-              v-html="link.label"
-            />
-          </li>
-        </template>
-      </ul>
-    </nav>
-
-    <div v-show="isLoading" class="spinner-border center"></div>
-
-    <router-link
-      v-for="post in feedbackData.data"
-      :to="{ name: 'feedbackThread', params: { id: post.id } }"
-      :key="post.id"
-      class="m-card"
-    >
-      <h4 class="m-card-title">{{ post.title }}</h4>
-
-      <div class="m-card-subtitle">
-        <i class="bi bi-tag-fill"></i>
-        <span>{{ post.category }}</span>
-      </div>
-
-      <div class="m-card-subtitle">
-        <i class="bi bi-person-fill"></i>
-        <span>{{ post.user.name }}</span>
-      </div>
-
-      <div class="m-card-subtitle">
-        <i class="bi bi-hand-thumbs-up-fill"></i>
-        <span>{{ post['vote_count'] }}</span>
-      </div>
-    </router-link> -->
   </div>
 </template>
 
@@ -141,15 +109,12 @@ a {
 }
 
 .section {
-  width: 100%;
-  height: 100%;
+  padding: 1em 0em;
 
   display: flex;
   flex-flow: column wrap;
   justify-content: space-around;
   align-items: center;
-
-  margin-top: 1em;
 }
 
 .m-card {

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import { useAuthStore } from '../stores/auth'
+import HomeView from '@/views/HomeView.vue'
+import { useAuthStore } from '@/stores/auth'
+import { Enums } from '@/utils'
 
 let authStore = null
 
@@ -15,22 +16,22 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      component: () => import('../views/AboutView.vue')
+      component: () => import('@/views/AboutView.vue')
     },
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('../views/ProfileView.vue')
+      component: () => import('@/views/ProfileView.vue')
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('@/views/LoginView.vue')
     },
     {
       path: '/register',
       name: 'register',
-      component: () => import('../views/RegistrationView.vue')
+      component: () => import('@/views/RegistrationView.vue')
     },
     {
       path: '/registration-success',
@@ -40,17 +41,17 @@ const router = createRouter({
     {
       path: '/feedback/:id',
       name: 'feedbackThread',
-      component: () => import('../views/FeedbackThreadView.vue')
+      component: () => import('@/views/FeedbackThreadView.vue')
     },
     {
       path: '/feedback-form',
       name: 'createFeedbackForm',
-      component: () => import('../views/FeedbackFormView.vue')
+      component: () => import('@/views/FeedbackFormView.vue')
     },
     {
       path: '/feedback-form/:id',
       name: 'editFeedbackForm',
-      component: () => import('../views/FeedbackFormView.vue')
+      component: () => import('@/views/FeedbackFormView.vue')
     },
     {
       path: '/search',
@@ -68,13 +69,15 @@ const router = createRouter({
 export default router
 
 router.beforeEach((to, from, next) => {
+  const isAuth = localStorage.getItem(Enums.ACCESS_TOKEN)
+
   if (!authStore) {
     authStore = useAuthStore()
   }
 
-  if (to.name === 'login' && authStore.isAuth) next({ name: 'home' })
-  else if (to.name === 'profile' && !authStore.isAuth) next({ name: 'login' })
-  else if (to.name === 'createFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
-  else if (to.name === 'editFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
+  if (to.name === 'login' && isAuth) next({ name: 'home' })
+  else if (to.name === 'profile' && !isAuth) next({ name: 'login' })
+  else if (to.name === 'createFeedbackForm' && !isAuth) next({ name: 'login' })
+  else if (to.name === 'editFeedbackForm' && !isAuth) next({ name: 'login' })
   else next()
 })

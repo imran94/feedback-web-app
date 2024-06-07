@@ -54,17 +54,6 @@ const isOnSearchPage = computed(() => router.currentRoute.value.name !== 'search
 
 onMounted(() => {
   auth.init()
-  console.log('localStorage.getItem(Enums.ACCESS_TOKEN)', localStorage.getItem(Enums.ACCESS_TOKEN))
-  console.log(
-    'localStorage.getItem(Enums.REFRESH_TOKEN)',
-    localStorage.getItem(Enums.REFRESH_TOKEN)
-  )
-
-  console.log('auth.isAuth: ', auth.isAuth)
-
-  // if (auth.isAuth) {
-  //   getUser()
-  // }
 })
 </script>
 

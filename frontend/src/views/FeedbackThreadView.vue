@@ -147,8 +147,8 @@ async function updateComment(comment) {
   // comment.content = comment.editedComment
 
   const { response, data } = await customFetch(`/comments/${comment.id}`, 'PUT', updatedComment)
-  const isSuccess = response.status === 200
-  if (isSuccess) {
+
+  if (response.ok) {
     comment.content = data.content
     comment.isEditing = false
     comment.editedComment = comment.content
@@ -158,12 +158,12 @@ async function updateComment(comment) {
     post.value.comments = { ...post.value.comments }
   }
   Swal.fire({
-    title: isSuccess ? 'Comment successfully edited' : 'Failed to edit comment',
+    title: response.ok ? 'Comment successfully edited' : 'Failed to edit comment',
     toast: true,
     timer: 2000,
     position: 'top-end',
     showConfirmButton: false,
-    icon: isSuccess ? 'success' : 'error'
+    icon: response.ok ? 'success' : 'error'
   })
 }
 
@@ -439,5 +439,8 @@ a {
 .m-form-group {
   width: 100%;
   margin-bottom: 1em;
+}
+.dropdown {
+  padding-bottom: 0.5em;
 }
 </style>
