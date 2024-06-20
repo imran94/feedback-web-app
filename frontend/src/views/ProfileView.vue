@@ -1,8 +1,9 @@
 <script setup>
 import { customFetch } from '@/utils'
 import { ref, onMounted } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@/stores/auth'
 import FeedbackList from '@/components/FeedbackList.vue'
+import router from '@/router'
 
 const isLoading = ref(true)
 const isError = ref(false)
@@ -16,8 +17,10 @@ const feedbackData = ref({
 })
 
 const authStore = useAuthStore()
-authStore.$subscribe((mutation, state) => {
-  console.log(state)
+authStore.$subscribe((_, state) => {
+  if (!state.isAuth) {
+    router.push({ name: 'home' })
+  }
 })
 
 async function fetchPosts() {

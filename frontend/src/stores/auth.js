@@ -8,9 +8,14 @@ export const useAuthStore = defineStore('auth', () => {
   const userId = ref(null)
   const isAuth = ref(false)
   const isLoading = ref(false)
+  const accessToken = ref(null)
+  const refreshToken = ref(null)
 
   const init = async () => {
-    if (localStorage.getItem(Enums.ACCESS_TOKEN) && !isAuth.value) {
+    accessToken.value = localStorage.getItem(Enums.ACCESS_TOKEN)
+    refreshToken.value = localStorage.getItem(Enums.REFRESH_TOKEN)
+
+    if (accessToken.value && !isAuth.value) {
       isLoading.value = true
       const { response, data } = await customFetch('/user')
       if (response.ok) {
@@ -31,8 +36,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const setUser = (data) => {
-    updateTokens(data)
+  const setUser = (data, rememberMe = false) => {
+    if (rememberMe) {
+      updateTokens(data)
+    }
     isAuth.value = true
     isAdmin.value = data['is_admin'] ?? false
     username.value = data.name

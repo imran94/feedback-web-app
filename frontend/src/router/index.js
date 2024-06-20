@@ -18,8 +18,9 @@ const router = createRouter({
       name: 'about',
       component: () => import('@/views/AboutView.vue')
     },
+    // will match /profile and /profile/42
     {
-      path: '/profile',
+      path: '/profile/:id(\\d+)?',
       name: 'profile',
       component: () => import('@/views/ProfileView.vue')
     },
@@ -62,6 +63,16 @@ const router = createRouter({
       path: '/verify-email-address/:code',
       name: 'verifyEmailAddress',
       component: () => import('@/views/VerifyEmailView.vue')
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgotPassword',
+      component: () => import('@/views/ForgotPasswordView.vue')
+    },
+    {
+      path: '/reset-password',
+      name: 'resetPassword',
+      component: () => import('@/views/ResetPasswordView.vue')
     }
   ]
 })
@@ -76,6 +87,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.name === 'login' && isAuth) next({ name: 'home' })
+  else if (to.name === 'forgotPassword' && isAuth) next({ name: 'login' })
   else if (to.name === 'profile' && !isAuth) next({ name: 'login' })
   else if (to.name === 'createFeedbackForm' && !isAuth) next({ name: 'login' })
   else if (to.name === 'editFeedbackForm' && !isAuth) next({ name: 'login' })

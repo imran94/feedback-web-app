@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Laravel\Sanctum\PersonalAccessToken;
 
 use function PHPUnit\Framework\isNull;
@@ -118,6 +119,22 @@ class AuthController extends Controller
         return ['message' => 'Logged out successfully.'];
     }
 
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return
+            response()->json(
+                ['message' => __($status)],
+                $status === Password::RESET_LINK_SENT ? 200 : 404
+            );
+    }
+
+    // Internal functions not availabe to router
     private function createAccessToken(User $user)
     {
         return $user->createToken(

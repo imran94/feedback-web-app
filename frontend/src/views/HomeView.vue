@@ -1,7 +1,7 @@
 <script setup>
 import { customFetch } from '@/utils'
 import { ref, onMounted } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@/stores/auth'
 import FeedbackList from '@/components/FeedbackList.vue'
 
 const isLoading = ref(true)

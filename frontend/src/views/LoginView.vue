@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { customFetch } from '../utils'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 
 const auth = useAuthStore()
@@ -10,6 +10,7 @@ const email = ref('')
 const password = ref('')
 const isInputError = ref(false)
 const errorMessage = ref({})
+const rememberMe = ref(false)
 
 async function tryLogin() {
   isLoading.value = true
@@ -19,7 +20,7 @@ async function tryLogin() {
       password: password.value
     })
     if (response.ok) {
-      auth.setUser(data)
+      auth.setUser(data, rememberMe.value)
 
       router.push({ name: 'home' })
     } else {
@@ -40,10 +41,33 @@ async function tryLogin() {
 
 <template>
   <div class="section">
-    <div class="body">
-      <h4 class="title">Login</h4>
+    <div class="content">
+      <div class="login-social">
+        <a href="#" class="btn btn-social btn-facebook">
+          <i class="bi bi-facebook"></i>
+          <span>Sign In with Facebook</span>
+        </a>
+        <a href="#" class="btn btn-social btn-twitter">
+          <i class="bi bi-twitter"></i>
+          <span>Sign In with Twitter</span>
+        </a>
+        <a href="#" class="btn btn-social btn-google">
+          <i class="bi bi-google"></i>
+          <span>Sign In with Google</span>
+        </a>
+        <a href="#" class="btn btn-social btn-linkedin">
+          <i class="bi bi-linkedin"></i>
+          <span>Sign In with LinkedIn</span>
+        </a>
+      </div>
 
-      <form @submit.prevent="tryLogin">
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <form class="login-standard">
+        <h4 class="title">Login</h4>
+
         <div class="m-form-group">
           <label for="emailInput" class="form-label">Email address</label>
           <input
@@ -65,17 +89,32 @@ async function tryLogin() {
             class="form-control"
             required
           />
-          <span style="font-size: 0.8em"
-            >Don't have an account?
-            <router-link :to="{ name: 'register' }">Sign up</router-link></span
-          >
+        </div>
+
+        <div class="m-form-group options">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="checkRememberMe"
+              v-model="rememberMe"
+            />
+            <label class="form-check-label" for="checkRememberMe">Remember Me</label>
+          </div>
+
+          <a href="#">Forgot Password</a>
         </div>
 
         <div v-show="errorMessage?.message" class="input-error">{{ errorMessage.message }}</div>
-        <button type="submit" class="btn btn-primary" :disabled="isLoading">
+        <button type="submit" class="btn" :disabled="isLoading">
           <span v-show="!isLoading">Login</span>
           <div v-show="isLoading" class="spinner-grow" role="status"></div>
         </button>
+
+        <div class="m-form-group" style="font-size: 0.8em">
+          Don't have an account?
+          <router-link :to="{ name: 'register' }">Register</router-link>
+        </div>
       </form>
     </div>
   </div>
@@ -83,9 +122,16 @@ async function tryLogin() {
 
 <style scoped>
 .section {
-  display: flex;
+  /* display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
+
+  position: fixed;
+  inset: 0;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+  padding: 1rem;
 
   margin-top: 3em;
 }
@@ -95,14 +141,67 @@ async function tryLogin() {
   text-align: center;
 }
 
-.body {
-  width: 500px;
+.content {
+  width: 900px;
   border: 1px solid silver;
   border-radius: 3%;
-  padding: 1em;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
 }
 
-form {
+.btn {
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);
+  background-color: royalblue;
+  color: white;
+  width: 100%;
+  padding: 0.75em;
+}
+
+.btn:hover,
+.btn:focus {
+  filter: saturate(0.5);
+}
+
+.btn-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0px;
+}
+
+.btn > i {
+  padding: 0.65em 0.85em;
+  height: 100%;
+  background-color: #0000001a;
+}
+
+.btn > span {
+  width: 100%;
+  text-align: start;
+  padding-left: 5%;
+}
+
+.btn-facebook {
+  background-color: #3b5897;
+}
+.btn-twitter {
+  background-color: #53abee;
+}
+.btn-google {
+  background-color: #de4e3b;
+}
+.btn-linkedin {
+  background-color: #00a1db;
+}
+
+.login-social,
+.login-standard {
+  width: 100%;
+  padding: 20px 30px;
+
   display: flex;
   flex-flow: column wrap;
   align-items: center;
@@ -122,9 +221,30 @@ form {
   padding-bottom: 0.5em;
 }
 
+.options {
+  display: flex;
+  flex-flow: row wrap;
+  /* align-items: space-between; */
+  justify-content: space-between;
+}
+
 @media screen and (max-width: 500px) {
-  .body {
+  .section {
+    position: static;
+    padding-left: 0;
+    padding-right: 0;
     width: 100%;
+  }
+
+  .content {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .login-social,
+  .login-standard {
+    padding: 0.5em;
+    border: none;
   }
 }
 </style>

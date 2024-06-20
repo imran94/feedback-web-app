@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { customFetch } from '../utils'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 
 const auth = useAuthStore()

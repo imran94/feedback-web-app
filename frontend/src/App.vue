@@ -10,13 +10,6 @@ const auth = useAuthStore()
 const searchTerm = ref('')
 const showMenu = ref(false)
 
-async function getUser() {
-  const { response, data } = await customFetch('/user')
-  if (response.ok) {
-    auth.setUser(data)
-  }
-}
-
 function search() {
   router.push({
     name: 'search',

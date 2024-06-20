@@ -30,6 +30,7 @@ Route::post('/authenticate', [AuthController::class, 'authenticate']);
 Route::get('/feedback/{id}', [FeedbackPostController::class, 'getPostById']);
 Route::get('/feedback', [FeedbackPostController::class, 'getAll']);
 Route::delete('/user/logout', [AuthController::class, 'logout']);
+Route::post('/user/forgot-password', [AuthController::class, 'forgotPassword']);
 
 Route::middleware(
     'auth:sanctum',

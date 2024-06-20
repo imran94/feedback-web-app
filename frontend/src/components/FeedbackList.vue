@@ -10,17 +10,21 @@ function formattedDate(date) {
 </script>
 
 <template>
-  <ul class="pagination">
+  <!-- <ul class="pagination">
     <template v-for="link in feedbackData.links" :key="link.label">
       <li class="page-item" :class="{ disabled: !link.url }">
         <a class="page-link" :class="{ active: link.active }" href="javascript:void(0)"
           @click="$emit('page-no-clicked', link)" v-html="link.label" />
       </li>
     </template>
-  </ul>
+  </ul> -->
 
-  <router-link v-for="post in feedbackData.data" :to="{ name: 'feedbackThread', params: { id: post.id } }" :key="post.id"
-    class="m-card">
+  <router-link
+    v-for="post in feedbackData.data"
+    :to="{ name: 'feedbackThread', params: { id: post.id } }"
+    :key="post.id"
+    class="m-card"
+  >
     <h4 class="m-card-title">{{ post.title }}</h4>
 
     <div class="m-card-subtitle">
@@ -44,16 +48,21 @@ function formattedDate(date) {
     </div>
 
     <div class="m-card-subtitle">
-    <i class="bi bi-calendar"></i>
-    <span>{{ formattedDate(post['created_at']) }}</span>
+      <i class="bi bi-calendar"></i>
+      <span>{{ formattedDate(post['created_at']) }}</span>
     </div>
   </router-link>
 
   <ul class="pagination">
     <template v-for="link in feedbackData.links" :key="link.label">
       <li class="page-item" :class="{ disabled: !link.url }">
-        <a class="page-link" :class="{ active: link.active }" href="javascript:void(0)"
-          @click="$emit('page-no-clicked', link)" v-html="link.label" />
+        <a
+          class="page-link"
+          :class="{ active: link.active }"
+          href="javascript:void(0)"
+          @click="$emit('page-no-clicked', link)"
+          v-html="link.label"
+        />
       </li>
     </template>
   </ul>
@@ -80,7 +89,7 @@ a {
   width: 95%;
   margin-bottom: 1em;
   padding: 1em;
-  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .4);
+  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);
   border-radius: 0.5em;
 
   color: black;
@@ -92,7 +101,7 @@ a {
 
 a.m-card:hover {
   background-color: #ebebeb;
-  box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, .8);
+  box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.8);
 }
 
 .m-card-subtitle {
