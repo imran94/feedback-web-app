@@ -1,23 +1,30 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { customFetch } from '../utils'
-import { useAuthStore } from '@/stores/auth'
+import PasswordField from '@/components/PasswordField.vue'
 import router from '@/router'
 import Swal from 'sweetalert2'
 
-const token = ref(null)
+let token = null
+let email = null
 const isLoading = ref(false)
 const password = ref('')
 const confirmationPassword = ref('')
 const errorMessage = ref(null)
-const showPassword = ref(false)
 
 async function requestPasswordChange() {
+  if (password.value !== confirmationPassword.value) {
+    return
+  }
+
   isLoading.value = true
 
   try {
-    const { response, data } = await customFetch('/user/forgot-password', 'POST', {
-      email: email.value
+    const { response, data } = await customFetch(`/reset-password/${token}`, 'PUT', {
+      token: token,
+      email: email,
+      password: password.value,
+      password_confirmation: confirmationPassword.value
     })
     if (response.ok) {
       errorMessage.value = null
@@ -27,26 +34,33 @@ async function requestPasswordChange() {
         icon: 'success'
       })
     } else {
+      Swal.fire({
+        title: `Error ${response.status}`,
+        text: data.message,
+        icon: 'error'
+      })
       errorMessage.value = data.message ?? 'An error occurred. Please try again'
     }
   } catch (error) {
     console.error(error)
+    Swal.fire({
+      title: `Error`,
+      text: error,
+      icon: 'error'
+    })
     errorMessage.value = { message: error.message }
   }
 
   isLoading.value = false
 }
 
-const passwordToggleClass = computed(() => ({
-  'bi-eye': showPassword.value,
-  'bi-eye-slash': !showPassword.value
-}))
-
 onMounted(() => {
-  const resetPasswordToken = new URLSearchParams(location.search).get('token')
-  if (!resetPasswordToken) {
+  const params = new URLSearchParams(location.search)
+  const resetPasswordToken = params.get('token')
+  const userEmail = params.get('email')
+  if (!resetPasswordToken || !userEmail) {
     Swal.fire({
-      title: `No token given`,
+      title: `Insufficient data for password reset`,
       toast: true,
       timer: 2000,
       position: 'top-end',
@@ -56,7 +70,8 @@ onMounted(() => {
     router.push({ name: 'home' })
   }
 
-  token.value = resetPasswordToken
+  token = resetPasswordToken
+  email = userEmail
 })
 </script>
 
@@ -70,23 +85,13 @@ onMounted(() => {
 
       <form @submit.prevent="requestPasswordChange">
         <div class="m-form-group">
-          <label for="passwordInput" class="form-label">Password</label>
-          <div class="input-group">
-            <input
-              :type="showPassword ? 'text' : 'password'"
-              id="passwordInput"
-              v-model="password"
-              class="form-control"
-              required
-            />
-            <span class="input-group-text password-toggle" @click="showPassword = !showPassword">
-              <i class="bi" :class="passwordToggleClass" aria-hidden="true"></i>
-            </span>
-          </div>
+          <password-field v-model="password" />
         </div>
 
         <div class="m-form-group">
-          <label for="confirmPasswordInput" class="form-label">Confirm Password</label>
+          <password-field label="Confirm Password" v-model="confirmationPassword" />
+
+          <!-- <label for="confirmPasswordInput" class="form-label">Confirm Password</label>
           <div class="input-group">
             <input
               :type="showPassword ? 'text' : 'password'"
@@ -98,11 +103,12 @@ onMounted(() => {
             <span class="input-group-text password-toggle" @click="showPassword = !showPassword">
               <i class="bi" :class="passwordToggleClass" aria-hidden="true"></i>
             </span>
-          </div>
-          <div v-if="password !== confirmationPassword">
-            <span class="error"> Passwords do not match. </span>
-          </div>
+          </div> -->
         </div>
+
+        <span v-show="password !== confirmationPassword" class="error">
+          Passwords do not match.
+        </span>
 
         <button type="submit" class="btn btn-primary" :disabled="isLoading">
           <span v-show="!isLoading">Submit</span>
@@ -153,23 +159,9 @@ form {
   margin-bottom: 2em;
 }
 
-.error,
-.general-error {
+.error {
   color: red;
   font-size: 0.8em;
-}
-
-.general-error {
-  padding-top: 0.2em;
-  padding-left: 0.5em;
-  padding-bottom: 0.5em;
-}
-
-.password-toggle {
-  cursor: pointer;
-}
-
-.password-toggle:hover {
-  filter: saturate(0.5);
+  padding-bottom: 1em;
 }
 </style>

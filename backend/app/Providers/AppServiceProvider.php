@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
         ResetPassword::createUrlUsing(function (User $user, string $token) {
-            return env('FRONTEND_URL') . '/reset-password?token=' . $token;
+            return env('FRONTEND_URL') . '/reset-password?email=' . $user->email . '&token=' . $token;
         });
     }
 }

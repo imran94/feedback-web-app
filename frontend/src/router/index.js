@@ -87,7 +87,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.name === 'login' && isAuth) next({ name: 'home' })
-  else if (to.name === 'forgotPassword' && isAuth) next({ name: 'login' })
+  else if (to.name === 'forgotPassword' && isAuth) next({ name: 'home' })
   else if (to.name === 'profile' && !isAuth) next({ name: 'login' })
   else if (to.name === 'createFeedbackForm' && !isAuth) next({ name: 'login' })
   else if (to.name === 'editFeedbackForm' && !isAuth) next({ name: 'login' })

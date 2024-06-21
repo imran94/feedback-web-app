@@ -65,7 +65,7 @@ async function tryLogin() {
         <span>OR</span>
       </div>
 
-      <form class="login-standard">
+      <form class="login-standard" @submit.prevent="tryLogin">
         <h4 class="title">Login</h4>
 
         <div class="m-form-group">
@@ -102,7 +102,7 @@ async function tryLogin() {
             <label class="form-check-label" for="checkRememberMe">Remember Me</label>
           </div>
 
-          <a href="#">Forgot Password</a>
+          <router-link :to="{ name: 'forgotPassword' }">Forgot Password</router-link>
         </div>
 
         <div v-show="errorMessage?.message" class="input-error">{{ errorMessage.message }}</div>

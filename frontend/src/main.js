@@ -9,7 +9,6 @@ import * as PusherPushNotifications from '@pusher/push-notifications-web'
 
 import App from './App.vue'
 import router from './router'
-import axios from 'axios'
 
 const app = createApp(App)
 
@@ -23,20 +22,8 @@ beamsClient
   .then((deviceId) => console.log('Successfully registered with Beams. Device ID:', deviceId))
   .catch(console.error)
 
-// app.config.globalProperties.$axios = axios
 app.use(createPinia())
 app.use(router)
 app.use(PrimeVue)
-
-
-// axios.interceptors.request.use(request => {
-//   console.log("Interceptor")
-//   const accessToken = localStorage.getItem('accessToken')
-//   if (accessToken) {
-//       request.headers['Authorization'] = `Bearer ${accessToken}`
-//   }
-//   return request
-// }
-// )
 
 app.mount('#app')

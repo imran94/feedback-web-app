@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\TokenAbility;
 use App\Mail\EmailAddressConfirmation;
+use App\Models\PasswordResetToken;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Str;
 
 use function PHPUnit\Framework\isNull;
 
@@ -132,6 +134,34 @@ class AuthController extends Controller
                 ['message' => __($status)],
                 $status === Password::RESET_LINK_SENT ? 200 : 404
             );
+    }
+
+    public function resetPasswordWithToken(Request $request, string $token)
+    {
+
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                // event(new PasswordReset($user));
+            }
+        );
+
+        return response()->json(
+            ['message' => __($status)],
+            $status === Password::PASSWORD_RESET ? 200 : 404
+        );
     }
 
     // Internal functions not availabe to router

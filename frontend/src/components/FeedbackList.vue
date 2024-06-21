@@ -1,6 +1,4 @@
 <script setup>
-import { computed } from 'vue'
-
 defineProps(['feedbackData'])
 defineEmits(['page-no-clicked'])
 
