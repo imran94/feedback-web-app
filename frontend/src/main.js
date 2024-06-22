@@ -9,7 +9,9 @@ import * as PusherPushNotifications from '@pusher/push-notifications-web'
 
 import App from './App.vue'
 import router from './router'
+import { useAuthStore } from './stores/auth'
 
+const pinia = createPinia()
 const app = createApp(App)
 
 const beamsClient = new PusherPushNotifications.Client({
@@ -22,8 +24,9 @@ beamsClient
   .then((deviceId) => console.log('Successfully registered with Beams. Device ID:', deviceId))
   .catch(console.error)
 
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 app.use(PrimeVue)
+useAuthStore().init()
 
 app.mount('#app')

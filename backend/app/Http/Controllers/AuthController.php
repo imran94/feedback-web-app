@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Enums\TokenAbility;
 use App\Mail\EmailAddressConfirmation;
-use App\Models\PasswordResetToken;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;

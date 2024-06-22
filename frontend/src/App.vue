@@ -44,7 +44,7 @@ async function logout() {
 const isOnSearchPage = computed(() => router.currentRoute.value.name !== 'search')
 
 onMounted(() => {
-  auth.init()
+  // auth.init()
 })
 </script>
 

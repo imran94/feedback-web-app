@@ -47,8 +47,8 @@ return [
     */
 
     'expiration' => null,
-    'access_token_expiration' => env('SANCTUM_ACCESS_TOKEN_EXPIRATION'),
-    'refresh_token_expiration' => env('SANCTUM_REFRESH_TOKEN_EXPIRATION'),
+    'access_token_expiration' => 7,
+    'refresh_token_expiration' => 30,
 
     /*
     |--------------------------------------------------------------------------
