@@ -1,9 +1,7 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, computed } from 'vue'
 import router from './router'
-import { customFetch, Enums } from './utils'
 import Swal from 'sweetalert2'
 
 const auth = useAuthStore()
@@ -69,7 +67,7 @@ onMounted(() => {
           <i class="bi bi-x"></i>
         </div>
         <ul class="nav-list">
-          <li class="nav-item" v-if="auth.isAuthenticated">
+          <li class="nav-item" v-if="auth.isAuth">
             <router-link
               :to="{ name: 'createFeedbackForm' }"
               type="button"

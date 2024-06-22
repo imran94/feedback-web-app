@@ -23,7 +23,6 @@ async function fetchPosts() {
   isLoading.value = false
   if (response.ok) {
     feedbackData.value = data
-    console.log(feedbackData.value)
     if (screen.width <= 600) {
       // Shorten the number of page links to fit screen
       const links = feedbackData.value.links

@@ -80,16 +80,14 @@ const router = createRouter({
 export default router
 
 router.beforeEach((to, from, next) => {
-  const isAuth = localStorage.getItem(Enums.ACCESS_TOKEN)
-
   if (!authStore) {
     authStore = useAuthStore()
   }
 
-  if (to.name === 'login' && isAuth) next({ name: 'home' })
-  else if (to.name === 'forgotPassword' && isAuth) next({ name: 'home' })
-  else if (to.name === 'profile' && !isAuth) next({ name: 'login' })
-  else if (to.name === 'createFeedbackForm' && !isAuth) next({ name: 'login' })
-  else if (to.name === 'editFeedbackForm' && !isAuth) next({ name: 'login' })
+  if (to.name === 'login' && authStore.isAuth) next({ name: 'home' })
+  else if (to.name === 'forgotPassword' && authStore.isAuth) next({ name: 'home' })
+  else if (to.name === 'profile' && !authStore.isAuth) next({ name: 'login' })
+  else if (to.name === 'createFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
+  else if (to.name === 'editFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
   else next()
 })

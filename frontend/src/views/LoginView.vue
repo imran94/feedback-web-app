@@ -20,7 +20,8 @@ async function tryLogin() {
       password: password.value
     })
     if (response.ok) {
-      auth.setUser(data, rememberMe.value)
+      auth.shouldRemember = rememberMe.value
+      auth.setUser(data)
 
       router.push({ name: 'home' })
     } else {
@@ -102,7 +103,7 @@ async function tryLogin() {
             <label class="form-check-label" for="checkRememberMe">Remember Me</label>
           </div>
 
-          <router-link :to="{ name: 'forgotPassword' }">Forgot Password</router-link>
+          <router-link :to="{ name: 'forgotPassword' }">Forgot Password?</router-link>
         </div>
 
         <div v-show="errorMessage?.message" class="input-error">{{ errorMessage.message }}</div>
@@ -226,6 +227,14 @@ async function tryLogin() {
   flex-flow: row wrap;
   /* align-items: space-between; */
   justify-content: space-between;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 @media screen and (max-width: 500px) {

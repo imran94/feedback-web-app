@@ -10,10 +10,26 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(false)
   const accessToken = ref(null)
   const refreshToken = ref(null)
+  const shouldRemember = ref(false)
+  const areValuesInit = ref(false)
+
+  const initValues = () => {
+    if (areValuesInit.value) return
+
+    accessToken.value =
+      localStorage.getItem(Enums.ACCESS_TOKEN) ?? sessionStorage.getItem(Enums.ACCESS_TOKEN)
+    refreshToken.value =
+      localStorage.getItem(Enums.REFRESH_TOKEN) ?? sessionStorage.getItem(Enums.REFRESH_TOKEN)
+
+    if (accessToken.value) {
+      shouldRemember.value = true
+    }
+
+    areValuesInit.value = true
+  }
 
   const init = async () => {
-    accessToken.value = localStorage.getItem(Enums.ACCESS_TOKEN)
-    refreshToken.value = localStorage.getItem(Enums.REFRESH_TOKEN)
+    initValues()
 
     if (accessToken.value && !isAuth.value) {
       isLoading.value = true
@@ -21,6 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (response.ok) {
         setUser(data)
       } else {
+        logout()
         localStorage.clear()
       }
       isLoading.value = false
@@ -29,17 +46,25 @@ export const useAuthStore = defineStore('auth', () => {
 
   const updateTokens = (data) => {
     if (data.accessToken) {
-      localStorage.setItem(Enums.ACCESS_TOKEN, data.accessToken)
+      accessToken.value = data.accessToken
+      if (shouldRemember.value) {
+        localStorage.setItem(Enums.ACCESS_TOKEN, data.accessToken)
+      } else {
+        sessionStorage.setItem(Enums.ACCESS_TOKEN, data.accessToken)
+      }
     }
     if (data.refreshToken) {
-      localStorage.setItem(Enums.REFRESH_TOKEN, data.refreshToken)
+      refreshToken.value = data.refreshToken
+      if (shouldRemember.value) {
+        localStorage.setItem(Enums.REFRESH_TOKEN, data.refreshToken)
+      } else {
+        sessionStorage.setItem(Enums.REFRESH_TOKEN, data.refreshToken)
+      }
     }
   }
 
-  const setUser = (data, rememberMe = false) => {
-    if (rememberMe) {
-      updateTokens(data)
-    }
+  const setUser = (data) => {
+    updateTokens(data)
     isAuth.value = true
     isAdmin.value = data['is_admin'] ?? false
     username.value = data.name
@@ -48,15 +73,26 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => {
     const requestBody = {
-      accessToken: localStorage.getItem(Enums.ACCESS_TOKEN),
-      refreshToken: localStorage.getItem(Enums.REFRESH_TOKEN)
+      accessToken:
+        localStorage.getItem(Enums.ACCESS_TOKEN) ??
+        sessionStorage.getItem(Enums.ACCESS_TOKEN) ??
+        accessToken.value,
+      refreshToken:
+        localStorage.getItem(Enums.REFRESH_TOKEN) ??
+        sessionStorage.getItem(Enums.REFRESH_TOKEN) ??
+        refreshToken.value
     }
     localStorage.removeItem(Enums.ACCESS_TOKEN)
+    sessionStorage.removeItem(Enums.ACCESS_TOKEN)
     localStorage.removeItem(Enums.REFRESH_TOKEN)
+    sessionStorage.removeItem(Enums.REFRESH_TOKEN)
+    accessToken.value = null
+    refreshToken.value = null
     isAdmin.value = false
     userId.value = null
     username.value = null
     isAuth.value = false
+    shouldRemember.value = false
 
     customFetch('/user/logout', 'DELETE', requestBody)
   }
@@ -66,6 +102,11 @@ export const useAuthStore = defineStore('auth', () => {
     username,
     userId,
     isAuth,
+    shouldRemember,
+    accessToken,
+    refreshToken,
+    isLoading,
+    initValues,
     init,
     updateTokens,
     setUser,

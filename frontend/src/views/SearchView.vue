@@ -84,7 +84,6 @@ function navigateToPage(link) {
 }
 
 function onCategorySelected() {
-  console.log('onCategorySelected')
   resetPageNo()
   search()
 }

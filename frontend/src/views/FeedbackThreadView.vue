@@ -46,9 +46,6 @@ async function fetchPostDetails() {
     } catch (err) {
       const mute = err
     }
-
-    console.log('post: ', post.value.user.id)
-    console.log('userId: ', auth.userId)
   }
 
   isLoading.value = false

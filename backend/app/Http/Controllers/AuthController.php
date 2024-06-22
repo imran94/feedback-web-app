@@ -170,7 +170,7 @@ class AuthController extends Controller
         return $user->createToken(
             'access_token',
             [TokenAbility::ACCESS_API->value],
-            Carbon::now()->addMinutes(
+            Carbon::now()->addDays(
                 config('sanctum.access_token_expiration')
             )
         );
@@ -181,7 +181,7 @@ class AuthController extends Controller
         return $user->createToken(
             'refresh_token',
             [TokenAbility::ISSUE_ACCESS_TOKEN->value],
-            Carbon::now()->addMinutes(
+            Carbon::now()->addDays(
                 config('sanctum.refresh_token_expiration')
             )
         );

@@ -24,24 +24,28 @@ const categories = [
 ]
 
 const customFetch = async (url = '', method = 'GET', request = {}) => {
-  if (!authStore) {
-    authStore = useAuthStore()
-  }
+  // if (!authStore) {
+  authStore = useAuthStore()
+  // }
+  authStore.initValues()
 
-  const accessToken = localStorage.getItem(Enums.ACCESS_TOKEN)
-  let { response, data } = await networkRequest(url, method, request, accessToken)
+  let { response, data } = await networkRequest(url, method, request, authStore.accessToken)
 
-  if (response.status !== 401) {
+  if (response.status !== 401 || (response.status === 401 && !authStore.isAuth)) {
     return { response, data }
   }
 
-  const refreshToken = localStorage.getItem(Enums.REFRESH_TOKEN)
-
-  if (!refreshToken) {
+  if (!authStore.refreshToken) {
+    authStore.logout()
     return { response, data }
   }
 
-  const refreshResponse = await networkRequest('/user/refresh-token', 'GET', {}, refreshToken)
+  const refreshResponse = await networkRequest(
+    '/user/refresh-token',
+    'GET',
+    {},
+    authStore.refreshToken
+  )
   const refreshData = refreshResponse.data
 
   if (!refreshResponse.response.ok) {
@@ -49,8 +53,7 @@ const customFetch = async (url = '', method = 'GET', request = {}) => {
     return { response, data }
   }
 
-  localStorage.setItem(Enums.ACCESS_TOKEN, refreshData.accessToken)
-  localStorage.setItem(Enums.REFRESH_TOKEN, refreshData.refreshToken)
+  authStore.updateTokens(refreshData)
 
   let newResponse = await networkRequest(url, method, request, refreshData.accessToken)
   response = newResponse.response
