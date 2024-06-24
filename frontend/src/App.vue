@@ -103,7 +103,7 @@ onMounted(() => {
             </RouterLink>
           </li>
 
-          <li class="nav-item" v-show="!auth.isAuth && !auth.isLoading">
+          <li class="nav-item" v-show="!auth.isAuth && !auth.isLoadingUser">
             <RouterLink
               to="/login"
               class="nav-link"
@@ -115,7 +115,7 @@ onMounted(() => {
             </RouterLink>
           </li>
 
-          <li class="nav-item" v-show="!auth.isAuth && !auth.isLoading">
+          <li class="nav-item" v-show="!auth.isAuth && !auth.isLoadingUser">
             <RouterLink
               to="/register"
               class="nav-link"

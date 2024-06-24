@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/authenticate', [AuthController::class, 'authenticate']);
+Route::delete('/user/logout', [AuthController::class, 'logout']);
 
 Route::post('/user/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::put('/reset-password/{token}', [AuthController::class, 'resetPasswordWithToken']);
@@ -31,7 +32,8 @@ Route::put('/reset-password/{token}', [AuthController::class, 'resetPasswordWith
 // Feedback Posts
 Route::get('/feedback/{id}', [FeedbackPostController::class, 'getPostById']);
 Route::get('/feedback', [FeedbackPostController::class, 'getAll']);
-Route::delete('/user/logout', [AuthController::class, 'logout']);
+
+Route::get('/user/{user}/feedback', [FeedbackPostController::class, 'getAllByUser']);
 
 Route::middleware(
     'auth:sanctum',

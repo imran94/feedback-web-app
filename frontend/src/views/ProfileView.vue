@@ -1,9 +1,14 @@
 <script setup>
 import { customFetch } from '@/utils'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import FeedbackList from '@/components/FeedbackList.vue'
 import router from '@/router'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const authStore = useAuthStore()
+let userId = route.params.id !== '' ? route.params.id : authStore.userId ?? ''
 
 const isLoading = ref(true)
 const isError = ref(false)
@@ -16,17 +21,39 @@ const feedbackData = ref({
   per_page: 15
 })
 
-const authStore = useAuthStore()
 authStore.$subscribe((_, state) => {
-  if (!state.isAuth) {
+  console.log('state change')
+  // user looking at own profile but not authenticated and not loading info
+  if (userId === '' && state.isAuth) {
+    userId = state.userId
+    fetchPosts()
+  }
+
+  if (route.params.id === '' && !state.isAuth && !state.isLoadingUser) {
     router.push({ name: 'home' })
+  }
+})
+
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    console.log('route changed to ' + newId)
+    userId = newId
+    fetchPosts()
+  }
+)
+
+onMounted(() => {
+  if (userId !== '') {
+    console.log('fetching for user ' + userId)
+    fetchPosts()
   }
 })
 
 async function fetchPosts() {
   isLoading.value = true
   const { response, data } = await customFetch(
-    `/user/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`
+    `/user/${userId}/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`
   )
   isLoading.value = false
   if (!response.ok) {
@@ -84,25 +111,34 @@ function navigateToPage(link) {
 
   fetchPosts()
 }
-
-onMounted(() => {
-  fetchPosts()
-})
 </script>
 
 <template>
-  <div class="section">
-    <div v-show="isLoading && feedbackData.data.length === 0" class="spinner-border center"></div>
+  <div class="body">
+    <ul class="nav nav-pills nav-fill">
+      <li class="nav-item">
+        <span class="nav-link active" href="#">Info</span>
+      </li>
+      <li class="nav-item">
+        <span class="nav-link" href="#">History</span>
+      </li>
+    </ul>
 
-    <div v-show="feedbackData.data.length === 0 && !isLoading && !isError">
-      Looks like you haven't added any feedback.
+    <div id="userInfo" class="tab-content"></div>
+
+    <div id="feedbackHistory" class="tab-content">
+      <div v-show="isLoading && feedbackData.data.length === 0" class="spinner-border center" />
+
+      <div v-show="feedbackData.data.length === 0 && !isLoading && !isError">
+        Looks like you haven't added any feedback.
+      </div>
+
+      <div v-show="feedbackData.data.length === 0 && !isLoading && !isError">
+        Looks like you haven't added any feedback.
+      </div>
+
+      <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />
     </div>
-
-    <div v-show="feedbackData.data.length === 0 && !isLoading && !isError">
-      Looks like you haven't added any feedback.
-    </div>
-
-    <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />
   </div>
 </template>
 
@@ -111,8 +147,9 @@ a {
   text-decoration: none;
 }
 
-.section {
-  padding: 1em 0em;
+.body,
+.tab-content {
+  width: 100%;
 
   display: flex;
   flex-flow: column wrap;
@@ -120,8 +157,11 @@ a {
   align-items: center;
 }
 
+.tab-content {
+  padding: 0.5em 1em;
+}
+
 .m-card {
-  width: 95%;
   margin: 1em 0.5em;
   padding: 1em;
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);

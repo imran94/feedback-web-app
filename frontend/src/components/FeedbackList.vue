@@ -84,7 +84,7 @@ a {
 }
 
 .m-card {
-  width: 95%;
+  width: 100%;
   margin-bottom: 1em;
   padding: 1em;
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);

@@ -14,19 +14,19 @@ import { useAuthStore } from './stores/auth'
 const pinia = createPinia()
 const app = createApp(App)
 
-const beamsClient = new PusherPushNotifications.Client({
-  instanceId: 'f0fc087a-1695-4e40-8114-f78d417c68e2'
-})
+// const beamsClient = new PusherPushNotifications.Client({
+//   instanceId: 'f0fc087a-1695-4e40-8114-f78d417c68e2'
+// })
 
-beamsClient
-  .start()
-  .then((beamsClient) => beamsClient.getDeviceId())
-  .then((deviceId) => console.log('Successfully registered with Beams. Device ID:', deviceId))
-  .catch(console.error)
+// beamsClient
+//   .start()
+//   .then((beamsClient) => beamsClient.getDeviceId())
+//   .then((deviceId) => console.log('Successfully registered with Beams. Device ID:', deviceId))
+//   .catch(console.error)
 
 app.use(pinia)
+useAuthStore().init()
 app.use(router)
 app.use(PrimeVue)
-useAuthStore().init()
 
 app.mount('#app')

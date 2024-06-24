@@ -7,7 +7,7 @@ export const useAuthStore = defineStore('auth', () => {
   const username = ref(null)
   const userId = ref(null)
   const isAuth = ref(false)
-  const isLoading = ref(false)
+  const isLoadingUser = ref(false)
   const accessToken = ref(null)
   const refreshToken = ref(null)
   const shouldRemember = ref(false)
@@ -32,7 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
     initValues()
 
     if (accessToken.value && !isAuth.value) {
-      isLoading.value = true
+      isLoadingUser.value = true
       const { response, data } = await customFetch('/user')
       if (response.ok) {
         setUser(data)
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
         logout()
         localStorage.clear()
       }
-      isLoading.value = false
+      isLoadingUser.value = false
     }
   }
 
@@ -105,7 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
     shouldRemember,
     accessToken,
     refreshToken,
-    isLoading,
+    isLoadingUser,
     initValues,
     init,
     updateTokens,

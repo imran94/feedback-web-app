@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FeedbackPost;
+use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -52,6 +53,14 @@ class FeedbackPostController extends Controller
     public function getByUser()
     {
         return Auth::user()
+            ->feedbackPosts()
+            ->with('user')
+            ->paginate();
+    }
+
+    public function getAllByUser(User $user)
+    {
+        return $user
             ->feedbackPosts()
             ->with('user')
             ->paginate();
