@@ -63,12 +63,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const setUser = (data) => {
+  const setUser = async (data) => {
+    console.log('set user')
     updateTokens(data)
     isAuth.value = true
+    console.log('setUser isAuth', isAuth.value)
     isAdmin.value = data['is_admin'] ?? false
+    console.log('setUser isAdmin', isAdmin.value)
     username.value = data.name
-    userId.value = data.id
+    console.log('setUser username', username.value)
+
+    userId.value = data.id ?? data.userId
+    console.log('setUser userId', userId.value)
   }
 
   const logout = () => {

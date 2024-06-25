@@ -74,6 +74,27 @@ class AuthController extends Controller
         ]);
     }
 
+    public function update(Request $request)
+    {
+        $request->validate([
+            'email' => ['email']
+        ]);
+
+        $user = User::find(Auth::user()->id);
+
+        if ($request->input('email') !== null) {
+            $user->email = $request->input('email');
+        }
+
+        if ($request->input('name') !== null) {
+            $user->name = $request->input('name');
+        }
+
+        $user->save();
+
+        return response($user);
+    }
+
     public function verifyEmail(string $code)
     {
         $user = User::where('email_verification_code', $code)->first();
@@ -95,6 +116,11 @@ class AuthController extends Controller
     public function getCurrentUser()
     {
         return Auth::user();
+    }
+
+    public function getUserById(User $user)
+    {
+        return $user;
     }
 
     public function refreshToken(Request $request)
@@ -119,6 +145,21 @@ class AuthController extends Controller
         return ['message' => 'Logged out successfully.'];
     }
 
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|confirmed'
+        ]);
+
+        $user = User::find(Auth::user()->id);
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+
+        return response()->json([
+            'message' => 'Password changed successfully.'
+        ]);
+    }
+
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -136,7 +177,6 @@ class AuthController extends Controller
 
     public function resetPasswordWithToken(Request $request, string $token)
     {
-
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',

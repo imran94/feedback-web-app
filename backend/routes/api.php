@@ -33,6 +33,7 @@ Route::put('/reset-password/{token}', [AuthController::class, 'resetPasswordWith
 Route::get('/feedback/{id}', [FeedbackPostController::class, 'getPostById']);
 Route::get('/feedback', [FeedbackPostController::class, 'getAll']);
 
+Route::get('/user/{user}', [AuthController::class, 'getUserById']);
 Route::get('/user/{user}/feedback', [FeedbackPostController::class, 'getAllByUser']);
 
 Route::middleware(
@@ -47,6 +48,8 @@ Route::middleware(
     'ability:' . TokenAbility::ACCESS_API->value
 )->group(function () {
     Route::get('/user', [AuthController::class, 'getCurrentUser']);
+    Route::put('/user', [AuthController::class, 'update']);
+    Route::put('/user/reset-password', [AuthController::class, 'updatePassword']);
 
     Route::post('/search', [FeedbackPostController::class, 'search']);
     Route::get('/user/feedback', [FeedbackPostController::class, 'getByUser']);

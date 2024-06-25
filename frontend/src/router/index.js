@@ -89,12 +89,9 @@ router.beforeEach((to, from, next) => {
   else if (to.name === 'createFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
   else if (to.name === 'editFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
   else if (to.name === 'profile') {
-    console.log('to.name === "profile"')
     if (to.params.id === '' && !authStore.isAuth && !authStore.isLoadingUser) {
-      console.log('router: not auth. Redirecting to login')
       next({ name: 'login' })
     } else {
-      console.log('router: is auth. Proceeding')
       next()
     }
   } else next()

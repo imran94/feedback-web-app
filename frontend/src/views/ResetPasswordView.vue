@@ -90,20 +90,6 @@ onMounted(() => {
 
         <div class="m-form-group">
           <password-field label="Confirm Password" v-model="confirmationPassword" />
-
-          <!-- <label for="confirmPasswordInput" class="form-label">Confirm Password</label>
-          <div class="input-group">
-            <input
-              :type="showPassword ? 'text' : 'password'"
-              id="confirmPasswordInput"
-              v-model="confirmationPassword"
-              class="form-control"
-              required
-            />
-            <span class="input-group-text password-toggle" @click="showPassword = !showPassword">
-              <i class="bi" :class="passwordToggleClass" aria-hidden="true"></i>
-            </span>
-          </div> -->
         </div>
 
         <span v-show="password !== confirmationPassword" class="error">

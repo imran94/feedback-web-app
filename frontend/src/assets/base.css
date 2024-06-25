@@ -114,3 +114,7 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+.clickable {
+  cursor: pointer;
+}
