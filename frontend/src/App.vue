@@ -1,10 +1,14 @@
 <script setup>
+import { useThemeStore } from '@/stores/theme'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, computed } from 'vue'
 import router from './router'
 import Swal from 'sweetalert2'
+import { useRoute } from 'vue-router'
 
+const theme = useThemeStore()
 const auth = useAuthStore()
+const route = useRoute()
 const searchTerm = ref('')
 const showMenu = ref(false)
 
@@ -42,10 +46,6 @@ async function logout() {
 }
 
 const isOnSearchPage = computed(() => router.currentRoute.value.name !== 'search')
-
-onMounted(() => {
-  // auth.init()
-})
 </script>
 
 <template>
@@ -95,7 +95,7 @@ onMounted(() => {
             <RouterLink
               to="/profile"
               class="nav-link"
-              :class="{ active: router.currentRoute.value.name === 'profile' }"
+              :class="{ active: route.name === 'profile' && route.params.id === '' }"
               @click="showMenu = false"
             >
               <i class="bi bi-person"></i>
@@ -132,6 +132,11 @@ onMounted(() => {
               <i class="bi bi-box-arrow-left"></i>
               <span>Log Out</span>
             </a>
+          </li>
+
+          <li class="nav-item clickable theme-toggle-button" @click="theme.toggle">
+            <i v-show="!theme.isDarkMode" class="bi bi-sun"></i>
+            <i v-show="theme.isDarkMode" class="bi bi-moon"></i>
           </li>
         </ul>
       </div>
@@ -264,6 +269,16 @@ nav {
   color: var(--white-color);
 }
 
+.theme-toggle-button {
+  /* color: light-dark(var(--light-bg), var(--light-bg));
+  background: light-dark(var(--dark-bg), var(--light-bg)); */
+
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.4);
+
+  border-radius: 50%;
+  padding: 0.25em 0.5em;
+}
+
 @media screen and (max-width: 1150px) {
   nav {
     justify-content: flex-start;
@@ -312,6 +327,18 @@ nav {
 
   .nav-item:nth-child(5) {
     transition-delay: 0.5s;
+  }
+
+  .nav-item:nth-child(6) {
+    transition-delay: 0.6s;
+  }
+
+  .nav-item:nth-child(7) {
+    transition-delay: 0.7s;
+  }
+
+  .nav-item:nth-child(8) {
+    transition-delay: 0.8s;
   }
 
   .nav-link i {

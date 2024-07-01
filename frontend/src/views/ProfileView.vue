@@ -6,8 +6,10 @@ import FeedbackList from '@/components/FeedbackList.vue'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import PasswordField from '@/components/PasswordField.vue'
+import AvatarInputField from '@/components/AvatarInputField.vue'
 import Swal from 'sweetalert2'
 
+const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
 const route = useRoute()
 const authStore = useAuthStore()
 let userId = route.params.id !== '' ? route.params.id : authStore.userId ?? ''
@@ -21,6 +23,7 @@ const isEditing = ref(false)
 const isUpdatingUser = ref(false)
 const isUpdatingPassword = ref(false)
 
+const avatarFileInput = ref(null)
 const user = ref(null)
 const edittedUser = ref({
   email: '',
@@ -36,10 +39,11 @@ const feedbackData = ref({
   per_page: 15
 })
 
+const defaultAvatarUrl = `${import.meta.env.VITE_BACKEND_BASE_URL}/storage/blank-avatar.jpg`
+
 authStore.$subscribe((mutation, state) => {
   if ((userId === null || userId === undefined || userId === '') && state.userId) {
     userId = state.userId
-    console.log('updated userId to ', userId)
     fetchData()
   }
 
@@ -88,6 +92,7 @@ async function fetchInfo() {
   }
 
   data.createdAt = new Date(data['created_at']).toLocaleDateString()
+  // data.avatarUrl = `${baseUrl}/${data.avatarUrl}`
   user.value = data
   edittedUser.value = {
     name: data.name,
@@ -165,10 +170,12 @@ function navigateToPage(link) {
 async function updateUser() {
   isUpdatingUser.value = true
 
-  const { response, data } = await customFetch(`/user`, 'PUT', {
-    name: edittedUser.value.name,
-    email: edittedUser.value.email
-  })
+  const formData = new FormData()
+  for (const [key, value] of Object.entries(edittedUser.value)) {
+    formData.append(key, value)
+  }
+
+  const { response, data } = await customFetch(`/user/update`, 'POST', formData, false)
 
   const message = response.ok ? 'Your info has been updated.' : data.message
   Swal.fire({
@@ -211,6 +218,18 @@ async function updatePassword() {
 
   isUpdatingPassword.value = false
 }
+
+function setNewAvatar(event) {
+  const file = event.target.files[0]
+  edittedUser.value.avatar = file
+  edittedUser.value.avatarUrl = URL.createObjectURL(file)
+}
+
+function removeSelectedAvatar() {
+  // avatarFileInput.value = null
+  edittedUser.value.avatar = null
+  edittedUser.value.avatarUrl = null
+}
 </script>
 
 <template>
@@ -221,6 +240,11 @@ async function updatePassword() {
         v-if="user.id === authStore.userId"
         @click="isEditing = true"
       ></i>
+      <img
+        class="avatar"
+        :src="user.avatar_url ? `${baseUrl}/${user.avatar_url}` : defaultAvatarUrl"
+        alt="Avatar"
+      />
       <span>{{ user.name }}</span>
       <span>{{ user.email }}</span>
       <span v-if="user['is_admin']">Admin</span>
@@ -232,7 +256,15 @@ async function updatePassword() {
         class="bi bi-x-lg clickable edit-icon"
         v-if="user.id === authStore.userId"
         @click="isEditing = false"
+      ></i>
+
+      <avatar-input-field
+        :currentAvatarUrl="user.avatar_url"
+        :newAvatarUrl="edittedUser.avatarUrl"
+        @on-avatar-selected="setNewAvatar"
+        @on-avatar-removed="removeSelectedAvatar"
       />
+
       <div class="m-form-group">
         <label for="nameInput" class="form-label">Name</label>
         <input
@@ -240,7 +272,7 @@ async function updatePassword() {
           id="nameInput"
           v-model="edittedUser.name"
           class="form-control"
-          required
+          :placeholder="user.name"
         />
       </div>
 
@@ -251,7 +283,7 @@ async function updatePassword() {
           id="emailInput"
           v-model="edittedUser.email"
           class="form-control"
-          placeholder="name@example.com"
+          :placeholder="user.email"
           required
         />
       </div>
@@ -295,6 +327,10 @@ async function updatePassword() {
 </template>
 
 <style scoped>
+:root {
+  --input-avi-background-color: #7e7c7c;
+}
+
 a {
   text-decoration: none;
 }
@@ -378,5 +414,11 @@ a.m-card:hover {
 .btn:hover,
 .btn:focus {
   filter: saturate(0.5);
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
 }
 </style>

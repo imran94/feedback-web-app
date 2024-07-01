@@ -10,6 +10,7 @@ import * as PusherPushNotifications from '@pusher/push-notifications-web'
 import App from './App.vue'
 import router from './router'
 import { useAuthStore } from './stores/auth'
+import { useThemeStore } from './stores/theme'
 
 const pinia = createPinia()
 const app = createApp(App)
@@ -26,6 +27,7 @@ const app = createApp(App)
 
 app.use(pinia)
 useAuthStore().init()
+useThemeStore().init()
 app.use(router)
 app.use(PrimeVue)
 

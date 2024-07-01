@@ -7,6 +7,10 @@ const Enums = Object.freeze({
   ACCESS_TOKEN: 'accessToken',
   REFRESH_TOKEN: 'refreshToken'
 })
+const CONTENT_TYPE = Object.freeze({
+  JSON: 'application/json',
+  FORM_DATA: null
+})
 
 const categories = [
   'Product Feedback',
@@ -23,13 +27,13 @@ const categories = [
   'Customer Churn Feedback'
 ]
 
-const customFetch = async (url = '', method = 'GET', request = {}) => {
-  // if (!authStore) {
-  authStore = useAuthStore()
-  // }
+const customFetch = async (url = '', method = 'GET', body = {}, isJson = true) => {
+  if (!authStore) {
+    authStore = useAuthStore()
+  }
   authStore.initValues()
 
-  let { response, data } = await networkRequest(url, method, request, authStore.accessToken)
+  let { response, data } = await networkRequest(url, method, body, authStore.accessToken, isJson)
 
   if (response.status !== 401 || (response.status === 401 && !authStore.isAuth)) {
     return { response, data }
@@ -55,22 +59,28 @@ const customFetch = async (url = '', method = 'GET', request = {}) => {
 
   authStore.updateTokens(refreshData)
 
-  let newResponse = await networkRequest(url, method, request, refreshData.accessToken)
+  let newResponse = await networkRequest(url, method, body, refreshData.accessToken, isJson)
   response = newResponse.response
   data = newResponse.data
 
   return newResponse
 }
 
-const networkRequest = async (url = '', method = 'GET', request = {}, token) => {
+const networkRequest = async (url = '', method = 'GET', body = {}, token, isJson = true) => {
+  console.log('body:', typeof body)
+
+  const headers = {
+    Accept: 'application/json',
+    Authorization: token ? `Bearer ${token}` : null
+  }
+  if (isJson) {
+    headers['Content-Type'] = CONTENT_TYPE.JSON
+  }
+
   const response = await fetch(`${baseUrl}${url}`, {
     method: method,
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: token ? `Bearer ${token}` : null
-    },
-    body: method !== 'GET' ? JSON.stringify(request) : null
+    headers: headers,
+    body: method !== 'GET' ? (isJson ? JSON.stringify(body) : body) : null
   })
   const data = await response.json()
   return { response, data }

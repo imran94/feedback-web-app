@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/test-upload', [AuthController::class, 'testUpload']);
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/authenticate', [AuthController::class, 'authenticate']);
 Route::delete('/user/logout', [AuthController::class, 'logout']);
@@ -48,7 +50,7 @@ Route::middleware(
     'ability:' . TokenAbility::ACCESS_API->value
 )->group(function () {
     Route::get('/user', [AuthController::class, 'getCurrentUser']);
-    Route::put('/user', [AuthController::class, 'update']);
+    Route::post('/user/update', [AuthController::class, 'update']);
     Route::put('/user/reset-password', [AuthController::class, 'updatePassword']);
 
     Route::post('/search', [FeedbackPostController::class, 'search']);

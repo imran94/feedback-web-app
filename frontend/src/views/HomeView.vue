@@ -98,8 +98,6 @@ a {
 }
 
 .section {
-  padding: 1em 0em;
-
   display: flex;
   flex-flow: column wrap;
   justify-content: space-around;

@@ -1,6 +1,14 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --vt-c-white: #ffffff;
+  color-scheme: light dark;
+
+  --light-text: black;
+  --dark-text: white;
+
+  --light-bg: white;
+  --dark-bg: #181a1b;
+
+  --light-border: --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
 
@@ -19,21 +27,6 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
-}
-
-/* semantic color variables for this project */
-:root {
-  --color-background: var(--vt-c-white);
-  --color-background-soft: var(--vt-c-white-soft);
-  --color-background-mute: var(--vt-c-white-mute);
-
-  --color-border: var(--vt-c-divider-light-2);
-  --color-border-hover: var(--vt-c-divider-light-1);
-
-  --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
-
-  --section-gap: 160px;
 }
 
 :root {
@@ -56,42 +49,30 @@
   --z-fixed: 100;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--vt-c-black);
-    --color-background-soft: var(--vt-c-black-soft);
-    --color-background-mute: var(--vt-c-black-mute);
-
-    --color-border: var(--vt-c-divider-dark-2);
-    --color-border-hover: var(--vt-c-divider-dark-1);
-
-    --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
-  }
+:root {
+  --blank-avi-background-color: #b8b8b8;
+  --input-avi-background-color: #7e7c7c;
 }
 
-@media screen and (min-width: 1150px) {
-  .section, .body {
-    margin-top: var(--header-offset);
-  }
+/* @media screen and (min-width: 1150px) { */
+.section,
+.body {
+  padding-top: var(--header-offset);
 }
+/* } */
 
-*,
-*::before,
-*::after {
+/* *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   font-weight: normal;
-}
+} */
 
-body {
-  min-height: 100vh;
-  color: var(--color-text);
-  background: var(--color-background);
-  transition:
-    color 0.5s,
-    background-color 0.5s;
-  line-height: 1.6;
+* {
+  /* color-scheme: dark; */
+
+  color: light-dark(var(--light-text), var(--dark-text));
+  background: light-dark(var(--light-bg), var(--dark-bg));
+  border-color: light-dark(var(--light-border), var(--dark-border));
   font-family:
     Inter,
     -apple-system,

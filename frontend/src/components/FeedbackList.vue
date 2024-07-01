@@ -90,7 +90,7 @@ a {
   box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);
   border-radius: 0.5em;
 
-  color: black;
+  /* color: black; */
   display: flex;
   flex-direction: column;
   justify-content: center;

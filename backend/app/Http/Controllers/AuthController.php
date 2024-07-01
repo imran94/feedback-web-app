@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Str;
 
@@ -74,22 +75,41 @@ class AuthController extends Controller
         ]);
     }
 
+    public function testUpload(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'image|max:10240|dimensions:max_width=1000,max_height=1000'
+        ]);
+
+        $filePath = $request->file('avatar')->storePublicly('avatars');
+
+        return response()->json([
+            'partialFilePath' => $filePath,
+            'filePath' => asset($filePath)
+        ]);
+    }
+
     public function update(Request $request)
     {
         $request->validate([
-            'email' => ['email']
+            'email' => 'email',
+            'avatar' => 'image|max:10240|dimensions:max_width=1000,max_height=1000'
         ]);
 
         $user = User::find(Auth::user()->id);
 
-        if ($request->input('email') !== null) {
-            $user->email = $request->input('email');
+        if ($request->email != null) {
+            $user->email = $request->email;
         }
 
-        if ($request->input('name') !== null) {
-            $user->name = $request->input('name');
+        if ($request->name != null) {
+            $user->name = $request->name;
         }
 
+        if ($request->file('avatar') != null) {
+            $aviPath = $request->file('avatar')->storePublicly('avatars');
+            $user->avatar_url = $aviPath;
+        }
         $user->save();
 
         return response($user);
