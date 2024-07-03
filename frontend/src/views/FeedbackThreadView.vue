@@ -280,7 +280,7 @@ function isEmptyHtml(str) {
     <form @submit.prevent="submitNewComment" v-if="auth.isAuth" class="comment-form">
       <div class="m-form-group">
         <label>Write a comment</label>
-        <Editor v-model="ownComment" editorStyle="height: 320px" />
+        <Editor v-model="ownComment" editorStyle="height: 300px" />
       </div>
       <button type="submit" class="btn btn-secondary" :disabled="isSubmittingComment">
         Submit
@@ -345,8 +345,6 @@ function isEmptyHtml(str) {
         </div>
       </template>
     </template>
-
-    <div v-if="post?.comments.length === 0 && !isLoading">No comments added yet.</div>
   </div>
 </template>
 
@@ -357,11 +355,10 @@ a {
 }
 
 .section {
-  width: 100%;
-  height: 100%;
+  /* width: 100%; */
 
   display: flex;
-  flex-flow: column wrap;
+  flex-direction: column;
   justify-content: space-around;
   align-items: center;
 
@@ -372,7 +369,7 @@ a {
 .m-card {
   margin: 1em 0.5em;
   padding: 1em;
-  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: 2px 2px 5px 2px #00000066;
   border-radius: 0.5em;
 
   width: 100%;
@@ -403,9 +400,8 @@ a {
   padding-top: 0.5em;
 }
 
-.m-card-title,
-.m-card-subtitle * {
-  /* padding-right: 0.5em; */
+.m-card-subtitle i {
+  color: light-dark(black, white);
 }
 
 .m-card-main {
@@ -413,7 +409,7 @@ a {
   padding-bottom: 0.5em;
   width: 100%;
 
-  border-top: 1px solid black;
+  border-top: 1px solid light-dark(black, white);
 }
 
 .center {

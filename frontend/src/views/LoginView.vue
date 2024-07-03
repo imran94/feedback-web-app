@@ -1,8 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { customFetch } from '../utils'
+import { customFetch } from '@/utils'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
+import PasswordField from '@/components/PasswordField.vue'
 
 const auth = useAuthStore()
 const isLoading = ref(false)
@@ -43,29 +44,6 @@ async function tryLogin() {
 <template>
   <div class="section">
     <div class="content">
-      <div class="login-social">
-        <a href="#" class="btn btn-social btn-facebook">
-          <i class="bi bi-facebook"></i>
-          <span>Sign In with Facebook</span>
-        </a>
-        <a href="#" class="btn btn-social btn-twitter">
-          <i class="bi bi-twitter"></i>
-          <span>Sign In with Twitter</span>
-        </a>
-        <a href="#" class="btn btn-social btn-google">
-          <i class="bi bi-google"></i>
-          <span>Sign In with Google</span>
-        </a>
-        <a href="#" class="btn btn-social btn-linkedin">
-          <i class="bi bi-linkedin"></i>
-          <span>Sign In with LinkedIn</span>
-        </a>
-      </div>
-
-      <div class="divider">
-        <span>OR</span>
-      </div>
-
       <form class="login-standard" @submit.prevent="tryLogin">
         <h4 class="title">Login</h4>
 
@@ -82,14 +60,7 @@ async function tryLogin() {
         </div>
 
         <div class="m-form-group">
-          <label for="passwordInput" class="form-label">Password</label>
-          <input
-            type="password"
-            id="passwordInput"
-            v-model="password"
-            class="form-control"
-            required
-          />
+          <password-field v-model="password" />
         </div>
 
         <div class="m-form-group options">
@@ -107,7 +78,7 @@ async function tryLogin() {
         </div>
 
         <div v-show="errorMessage?.message" class="input-error">{{ errorMessage.message }}</div>
-        <button type="submit" class="btn" :disabled="isLoading">
+        <button type="submit" class="btn btn-full" :disabled="isLoading">
           <span v-show="!isLoading">Login</span>
           <div v-show="isLoading" class="spinner-grow" role="status"></div>
         </button>
@@ -122,48 +93,29 @@ async function tryLogin() {
 </template>
 
 <style scoped>
-.section {
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
-
-  position: fixed;
-  inset: 0;
-  width: fit-content;
-  height: fit-content;
-  margin: auto;
-  padding: 1rem;
-
-  margin-top: 3em;
-}
-
 .title {
   width: 100%;
   text-align: center;
 }
 
 .content {
-  width: 900px;
+  width: 500px;
+  height: fit-content;
   border: 1px solid silver;
-  border-radius: 3%;
+  border-radius: 0.5%;
+
+  position: fixed;
+  inset: 0;
+  /* width: fit-content; */
+  height: fit-content;
+  margin: auto;
+  padding: 1rem;
 
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-}
-
-.btn {
-  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);
-  background-color: royalblue;
-  color: white;
-  width: 100%;
-  padding: 0.75em;
-}
-
-.btn:hover,
-.btn:focus {
-  filter: saturate(0.5);
+  row-gap: 1em;
 }
 
 .btn-social {
@@ -201,7 +153,7 @@ async function tryLogin() {
 .login-social,
 .login-standard {
   width: 100%;
-  padding: 20px 30px;
+  /* padding: 20px 30px; */
 
   display: flex;
   flex-flow: column wrap;
@@ -231,6 +183,7 @@ async function tryLogin() {
 
 a {
   text-decoration: none;
+  color: light-dark(var(--light-link-text), var(--dark-link-text));
 }
 
 a:hover {

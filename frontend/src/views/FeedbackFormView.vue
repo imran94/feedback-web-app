@@ -7,8 +7,10 @@ import { marked } from 'marked'
 import Editor from 'primevue/editor'
 
 import { useAuthStore } from '@/stores/auth'
-const auth = useAuthStore()
+import { useThemeStore } from '@/stores/theme'
 
+const auth = useAuthStore()
+const theme = useThemeStore()
 const isLoading = ref(false)
 const isEditing = ref(false)
 const errorMessage = ref({})
@@ -25,6 +27,10 @@ onMounted(() => {
     fetchPost(feedbackId)
   }
 })
+
+const darkTheme = computed(() => ({
+  'dark-theme': theme.isDarkMode
+}))
 
 const convertedDescription = computed(() => {
   return marked.parse(post.value.description)
@@ -122,21 +128,9 @@ async function submitFeedback() {
           />
         </div>
 
-        <!-- <div class="m-form-group">
-                    <label for="description">Description</label>
-                    <textarea v-model="post.description" class="form-control" id="description" rows="8" required
-                        :disabled="isLoading"></textarea>
-                </div>
-
-                <div class="m-form-group">
-                    Preview:
-                    <div v-html="convertedDescription"></div>
-
-                </div> -->
-
         <div class="m-form-group">
           <label>Description</label>
-          <Editor v-model="post.description" editorStyle="height: 320px" />
+          <Editor :class="darkTheme" v-model="post.description" editorStyle="height: 320px" />
         </div>
 
         <div v-show="errorMessage?.message" class="input-error">{{ errorMessage.message }}</div>
@@ -193,5 +187,9 @@ form {
   padding-top: 0.2em;
   padding-left: 0.5em;
   padding-bottom: 0.5em;
+}
+
+.dark-theme {
+  color-scheme: dark;
 }
 </style>

@@ -1,8 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { customFetch } from '../utils'
+import { customFetch } from '@/utils'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
+import PasswordField from '@/components/PasswordField.vue'
 
 const auth = useAuthStore()
 const isLoading = ref(false)
@@ -38,7 +39,7 @@ async function register() {
 
 <template>
   <div class="section">
-    <div class="body">
+    <div class="body center-absolute">
       <h4 class="title">Sign Up</h4>
 
       <form @submit.prevent="register">
@@ -78,14 +79,7 @@ async function register() {
         </div>
 
         <div class="m-form-group">
-          <label for="passwordInput" class="form-label">Password</label>
-          <input
-            type="password"
-            id="passwordInput"
-            v-model="password"
-            class="form-control"
-            minlength="8"
-          />
+          <password-field v-model="password" />
           <div v-if="errorMessage?.errors?.password">
             <span v-for="errorText in errorMessage.errors.password" :key="errorText" class="error">
               {{ errorText }}
@@ -105,7 +99,7 @@ async function register() {
           >
         </div>
         <div v-show="errorMessage?.message" class="general-error">{{ errorMessage.message }}</div>
-        <button type="submit" class="btn btn-primary" :disabled="isLoading">
+        <button type="submit" class="btn btn-primary btn-full" :disabled="isLoading">
           <span v-show="!isLoading">Register</span>
           <div v-show="isLoading" class="spinner-grow" role="status"></div>
         </button>
@@ -140,11 +134,12 @@ form {
   display: flex;
   flex-flow: column wrap;
   align-items: center;
+  row-gap: 1em;
 }
 
 .m-form-group {
   width: 100%;
-  margin-bottom: 2em;
+  /* margin-bottom: 2em; */
 }
 
 .error,
@@ -157,5 +152,13 @@ form {
   padding-top: 0.2em;
   padding-left: 0.5em;
   padding-bottom: 0.5em;
+}
+a {
+  text-decoration: none;
+  color: light-dark(var(--light-link-text), var(--dark-link-text));
+}
+
+a:hover {
+  text-decoration: underline;
 }
 </style>

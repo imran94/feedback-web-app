@@ -160,12 +160,12 @@ const isOnSearchPage = computed(() => router.currentRoute.value.name !== 'search
 
 /* HEADER & NAV */
 .header {
+  background-color: var(--black-color);
   position: fixed;
   width: 100%;
   height: var(--header-height);
   top: 0;
   left: 0;
-  background-color: var(--black-color);
   z-index: var(--z-fixed);
 }
 
@@ -270,10 +270,10 @@ nav {
 }
 
 .theme-toggle-button {
-  /* color: light-dark(var(--light-bg), var(--light-bg));
-  background: light-dark(var(--dark-bg), var(--light-bg)); */
+  color: light-dark(var(--light-text), var(--dark-text));
+  background: light-dark(var(--light-card-bg), var(--dark-card-bg));
 
-  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
 
   border-radius: 50%;
   padding: 0.25em 0.5em;

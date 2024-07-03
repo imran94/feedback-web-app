@@ -85,11 +85,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="section">
-    <div v-show="isLoading && feedbackData.data.length === 0" class="spinner-border center"></div>
+  <div v-show="isLoading && feedbackData.data.length === 0" class="spinner-border center"></div>
 
-    <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />
-  </div>
+  <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />
 </template>
 
 <style scoped>

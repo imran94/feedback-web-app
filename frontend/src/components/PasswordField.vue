@@ -41,4 +41,9 @@ const props = defineProps({
 .password-toggle:hover {
   filter: saturate(0.5);
 }
+
+.input-group-text {
+  background-color: light-dark(#e9ecef, #232627);
+  color: light-dark(var(--light-text), var(--dark-text));
+}
 </style>

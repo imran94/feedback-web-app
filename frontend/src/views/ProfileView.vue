@@ -233,7 +233,7 @@ function removeSelectedAvatar() {
 </script>
 
 <template>
-  <div class="body">
+  <div class="section">
     <div v-if="user && !isEditing" class="user-info bordered">
       <i
         class="bi bi-pencil clickable edit-icon"
@@ -339,15 +339,10 @@ a {
   cursor: pointer;
 }
 
-.body {
-  width: 100%;
-  padding: 1em;
-}
-
-.body,
+.section,
 .user-info {
   display: flex;
-  flex-flow: column wrap;
+  flex-direction: column;
   justify-content: space-around;
   align-items: center;
 
@@ -420,5 +415,16 @@ a.m-card:hover {
   width: 100px;
   height: 100px;
   border-radius: 50%;
+}
+
+@media screen and (max-width: 500px) {
+  .user-info {
+    width: 100%;
+  }
+
+  .section {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
 }
 </style>

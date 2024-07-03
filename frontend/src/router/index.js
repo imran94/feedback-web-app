@@ -86,8 +86,10 @@ router.beforeEach((to, from, next) => {
 
   if (to.name === 'login' && authStore.isAuth) next({ name: 'home' })
   else if (to.name === 'forgotPassword' && authStore.isAuth) next({ name: 'home' })
-  else if (to.name === 'createFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
-  else if (to.name === 'editFeedbackForm' && !authStore.isAuth) next({ name: 'login' })
+  else if (to.name === 'createFeedbackForm' && !authStore.isAuth && !authStore.isLoadingUser)
+    next({ name: 'login' })
+  else if (to.name === 'editFeedbackForm' && !authStore.isAuth && !authStore.isLoadingUser)
+    next({ name: 'login' })
   else if (to.name === 'profile') {
     if (to.params.id === '' && !authStore.isAuth && !authStore.isLoadingUser) {
       next({ name: 'login' })
