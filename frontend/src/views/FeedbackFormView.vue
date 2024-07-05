@@ -20,6 +20,12 @@ const post = ref({
   category: ''
 })
 
+auth.$subscribe((mutation, state) => {
+  if (!state.isAuth && !state.isLoadingUser) {
+    router.push({ name: 'home' })
+  }
+})
+
 onMounted(() => {
   const feedbackId = location.pathname.split('/')[2]
 

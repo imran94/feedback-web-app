@@ -59,7 +59,7 @@ const isOnSearchPage = computed(() => router.currentRoute.value.name !== 'search
         class="nav-link"
         :class="{ active: router.currentRoute.value.name === 'home' }"
       >
-        Logo
+        Feedback Board
       </RouterLink>
 
       <div class="nav-menu" :class="{ 'show-menu': showMenu }">

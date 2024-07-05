@@ -42,12 +42,12 @@ a,
   --light-link-text: #0c68f1;
   --dark-link-text: #3e9cf5;
 
-  --light-bg: white;
+  --light-bg: #f7f8fd;
   --dark-bg: #121212;
 
   --light-border: --vt-c-white: #ffffff;
 
-  --light-card-bg: #ebebeb;
+  --light-card-bg: #ffffff;
   --dark-card-bg: #1d1d1d;
 
   --light-card-bg-hover: #cecccc;
@@ -61,6 +61,10 @@ a,
 
   --light-btn-bg: #0d6efd;
   --dark-btn-bg: #0250c4;
+
+  --blank-avi-bg-light: #d8d4d4;
+  --blank-avi-bg-dark: #646464;
+  --input-avi-bg: #7e7c7c;
 }
 
 :root {
@@ -81,11 +85,6 @@ a,
   /*========== z index ==========*/
   --z-tooltip: 10;
   --z-fixed: 100;
-}
-
-:root {
-  --blank-avi-background-color: #b8b8b8;
-  --input-avi-background-color: #7e7c7c;
 }
 
 /* @media screen and (min-width: 1150px) { */

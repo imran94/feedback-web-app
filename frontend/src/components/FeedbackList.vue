@@ -52,7 +52,7 @@ function formattedDate(date) {
       </div>
     </router-link>
 
-    <ul class="pagination">
+    <ul class="pagination" v-if="feedbackData.data.length !== 0">
       <template v-for="link in feedbackData.links" :key="link.label">
         <li class="page-item" :class="{ disabled: !link.url }">
           <a
@@ -97,7 +97,7 @@ a {
   color: light-dark(var(--light-text), var(--dark-text));
   background: light-dark(var(--light-card-bg), var(--dark-card-bg));
   display: flex;
-  flex-direction: column;
+  flex-direction: row wrap;
   justify-content: center;
   align-items: flex-start;
 }

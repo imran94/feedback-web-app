@@ -4,6 +4,7 @@ import { customFetch } from '@/utils'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 import PasswordField from '@/components/PasswordField.vue'
+import AvatarInputField from '@/components/AvatarInputField.vue'
 
 const auth = useAuthStore()
 const isLoading = ref(false)
@@ -13,15 +14,22 @@ const password = ref('')
 const isAdmin = ref(false)
 const isInputError = ref(false)
 const errorMessage = ref('')
+const avatar = ref(null)
+const avatarUrl = ref(null)
 
 async function register() {
+  isLoading.value = true
+
+  const formData = new FormData()
+  formData.append('name', name.value)
+  formData.append('email', email.value)
+  formData.append('password', password.value)
+  if (avatar.value) {
+    formData.append('avatar', avatar.value)
+  }
+
   try {
-    isLoading.value = true
-    const { response, data } = await customFetch('/register', 'POST', {
-      name: name.value,
-      email: email.value,
-      password: password.value
-    })
+    const { response, data } = await customFetch('/register', 'POST', formData, false)
     if (response.ok) {
       auth.name = data.name
       router.push({ name: 'registrationSuccess' })
@@ -34,6 +42,17 @@ async function register() {
     errorMessage.value = { message: error.message }
   }
   isLoading.value = false
+}
+
+function setAvatar(event) {
+  const file = event.target.files[0]
+  avatar.value = file
+  avatarUrl.value = URL.createObjectURL(file)
+}
+
+function removeSelectedAvatar() {
+  avatar.value = null
+  avatarUrl.value = null
 }
 </script>
 
@@ -87,6 +106,13 @@ async function register() {
           </div>
         </div>
 
+        <avatar-input-field
+          :currentAvatarUrl="null"
+          :newAvatarUrl="avatarUrl"
+          @on-avatar-selected="setAvatar"
+          @on-avatar-removed="removeSelectedAvatar"
+        />
+
         <div class="m-form-group form-check">
           <input class="form-check-input" type="checkbox" v-model="isAdmin" id="isAdminCheckbox" />
           <label class="form-check-label" for="isAdminCheckbox"> Admin </label>
@@ -132,8 +158,9 @@ async function register() {
 
 form {
   display: flex;
-  flex-flow: column wrap;
-  align-items: center;
+  flex-direction: column;
+  align-content: flex-start;
+  justify-content: center;
   row-gap: 1em;
 }
 
@@ -160,5 +187,9 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.avatar-select {
+  align-self: center;
 }
 </style>

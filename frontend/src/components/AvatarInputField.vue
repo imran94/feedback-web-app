@@ -21,7 +21,7 @@ function removeSelectedAvatar() {
         :src="newAvatarUrl ?? `${baseUrl}/${currentAvatarUrl}`"
         alt="Avatar"
       />
-      <i v-else class="bi bi-plus"></i>
+      <i v-else class="bi bi-camera-fill"></i>
     </div>
 
     <input
@@ -50,6 +50,11 @@ function removeSelectedAvatar() {
 </template>
 
 <style scoped>
+.input-avi-container,
+.avatar-select-tip {
+  align-self: center;
+}
+
 .input-avi-container {
   width: 100px;
   height: 100px;
@@ -68,15 +73,12 @@ function removeSelectedAvatar() {
   left: 0;
 }
 .input-avi-image {
-  background-color: var(--blank-avi-background-color);
+  background: light-dark(var(--blank-avi-bg-light), var(--blank-avi-bg-dark));
   /* background-color: #b8b8b8; */
   /* color: white; */
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.input-avi-image:hover {
-  background-color: var(--input-avi-background-color);
 }
 
 .input-avi-selector {
@@ -93,9 +95,10 @@ function removeSelectedAvatar() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--input-avi-background-color);
+  background: var(--input-avi-bg);
   color: white;
   opacity: 0;
+  font-size: 1.5em;
 }
 .input-avi-selector-label:hover {
   opacity: 75%;
@@ -107,7 +110,8 @@ function removeSelectedAvatar() {
   border-radius: 50%;
   position: absolute;
   bottom: 0;
-  background-color: #ffffff;
+  background: light-dark(var(--blank-avi-bg-dark), var(--light-bg));
+  color: light-dark(var(--dark-text), var(--light-text));
   padding: 0.3em 0.5em;
 }
 .bt-input-avi-remove:hover {

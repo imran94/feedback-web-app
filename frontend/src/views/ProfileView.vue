@@ -196,6 +196,10 @@ async function updateUser() {
 }
 
 async function updatePassword() {
+  if (newPassword.value !== newPasswordConfirmation.value) {
+    return
+  }
+
   isUpdatingPassword.value = true
 
   const { response, data } = await customFetch(`/user/reset-password`, 'PUT', {
@@ -229,6 +233,37 @@ function removeSelectedAvatar() {
   // avatarFileInput.value = null
   edittedUser.value.avatar = null
   edittedUser.value.avatarUrl = null
+}
+
+async function deleteAccount() {
+  const res = await Swal.fire({
+    title: 'Delete User',
+    text: 'Are you sure you want to delete this user account?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes'
+  })
+  if (!res.isConfirmed) {
+    return
+  }
+
+  const { response, data } = await customFetch(`/user/${userId}`, 'DELETE')
+
+  Swal.fire({
+    text: response.message,
+    toast: true,
+    timer: 2000,
+    position: 'top-end',
+    showConfirmButton: false,
+    icon: response.ok ? 'success' : 'error'
+  })
+
+  router.push({ name: 'home' })
+  if (userId === authStore.userId) {
+    authStore.logout()
+  }
 }
 </script>
 
@@ -302,6 +337,10 @@ function removeSelectedAvatar() {
         <password-field label="Confirm Password" v-model="newPasswordConfirmation" />
       </div>
 
+      <span v-show="newPassword !== newPasswordConfirmation" class="error">
+        Passwords do not match.
+      </span>
+
       <button type="submit" class="btn" :disabled="isUpdatingPassword">
         <span v-show="!isUpdatingPassword">Update Password</span>
         <div v-show="isUpdatingPassword" class="spinner-grow" role="status"></div>
@@ -309,14 +348,10 @@ function removeSelectedAvatar() {
     </form>
 
     <div v-if="user && isEditing" class="user-info bordered">
-      <button class="btn btn-danger">Delete Account</button>
+      <button class="btn btn-danger" @click="deleteAccount">Delete Account</button>
     </div>
 
     <div v-show="isLoading && feedbackData.data.length === 0" class="spinner-border center" />
-
-    <div v-show="feedbackData.data.length === 0 && !isLoading && !isError">
-      Looks like you haven't added any feedback.
-    </div>
 
     <div v-show="feedbackData.data.length === 0 && !isLoading && isError">
       <span>An error occurred while getting feedback.</span>
@@ -415,6 +450,12 @@ a.m-card:hover {
   width: 100px;
   height: 100px;
   border-radius: 50%;
+}
+
+.error {
+  color: red;
+  font-size: 0.8em;
+  padding-bottom: 0.5em;
 }
 
 @media screen and (max-width: 500px) {

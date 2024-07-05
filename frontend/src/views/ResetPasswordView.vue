@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { customFetch } from '../utils'
 import PasswordField from '@/components/PasswordField.vue'
 import router from '@/router'
