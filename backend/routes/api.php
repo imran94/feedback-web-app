@@ -52,6 +52,7 @@ Route::middleware(
     Route::get('/user', [AuthController::class, 'getCurrentUser']);
     Route::post('/user/update', [AuthController::class, 'update']);
     Route::put('/user/reset-password', [AuthController::class, 'updatePassword']);
+    Route::delete('/user/{user}', [AuthController::class, 'delete']);
 
     Route::post('/search', [FeedbackPostController::class, 'search']);
     Route::get('/user/feedback', [FeedbackPostController::class, 'getByUser']);

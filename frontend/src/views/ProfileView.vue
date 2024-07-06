@@ -115,6 +115,7 @@ async function fetchPosts() {
   }
 
   feedbackData.value = data
+  console.log(data)
 
   if (screen.width <= 600) {
     // Shorten the number of page links to fit screen
@@ -268,7 +269,7 @@ async function deleteAccount() {
 </script>
 
 <template>
-  <div class="section">
+  <div class="body">
     <div v-if="user && !isEditing" class="user-info bordered">
       <i
         class="bi bi-pencil clickable edit-icon"
@@ -357,7 +358,12 @@ async function deleteAccount() {
       <span>An error occurred while getting feedback.</span>
     </div>
 
-    <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />
+    <feedback-list
+      :feedbackData="feedbackData"
+      :isLoading="isLoading"
+      emptyMessage="No feedback added yet."
+      @page-no-clicked="navigateToPage($event)"
+    />
   </div>
 </template>
 
@@ -374,7 +380,7 @@ a {
   cursor: pointer;
 }
 
-.section,
+.body,
 .user-info {
   display: flex;
   flex-direction: column;
@@ -382,6 +388,13 @@ a {
   align-items: center;
 
   row-gap: 0.5em;
+
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.feedback-list {
+  margin: 1em;
 }
 
 .user-info {
@@ -398,33 +411,6 @@ a {
 
 .tab-content {
   padding: 0.5em 1em;
-}
-
-.m-card {
-  margin: 1em 0.5em;
-  padding: 1em;
-  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);
-  border-radius: 0.5em;
-
-  color: black;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-a.m-card:hover {
-  background-color: #ebebeb;
-  box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.8);
-}
-
-.m-card-subtitle {
-  display: inline-flex;
-  justify-content: space-between;
-}
-
-.m-card-subtitle * {
-  padding-right: 5px;
 }
 
 .center {
@@ -461,11 +447,6 @@ a.m-card:hover {
 @media screen and (max-width: 500px) {
   .user-info {
     width: 100%;
-  }
-
-  .section {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
   }
 }
 </style>

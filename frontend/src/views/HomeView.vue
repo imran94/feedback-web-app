@@ -1,8 +1,12 @@
 <script setup>
-import { customFetch } from '@/utils'
-import { ref, onMounted } from 'vue'
+import { customFetch, categories } from '@/utils'
+import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import FeedbackList from '@/components/FeedbackList.vue'
+import { useRoute } from 'vue-router'
+import router from '@/router'
+
+const route = useRoute()
 
 const isLoading = ref(true)
 const feedbackData = ref({
@@ -15,10 +19,13 @@ const feedbackData = ref({
 
 const baseUrl = import.meta.env.VITE_BACKEND_URL
 
+watch(() => route.query.category, fetchPosts, { immediate: true })
+onMounted(() => fetchPosts())
+
 async function fetchPosts() {
   isLoading.value = true
   const { response, data } = await customFetch(
-    `/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}`
+    `/feedback?page=${feedbackData.value.current_page}&limit=${feedbackData.value.per_page}&category=${route.query.category ?? ''}`
   )
   isLoading.value = false
   if (response.ok) {
@@ -79,37 +86,119 @@ async function navigateToPage(link) {
   })
 }
 
-onMounted(() => {
-  fetchPosts()
-})
+function setCategory(selectedCategory) {
+  router.push({ query: { category: selectedCategory } })
+}
 </script>
 
 <template>
-  <div v-show="isLoading && feedbackData.data.length === 0" class="spinner-border center"></div>
+  <div class="body">
+    <div class="sidebar">
+      <div class="filter-selector">
+        <div
+          class="category clickable"
+          :class="{
+            'category-selected': !route.query.category
+          }"
+          @click="setCategory('')"
+        >
+          All
+        </div>
 
-  <feedback-list :feedbackData="feedbackData" @page-no-clicked="navigateToPage($event)" />
+        <div
+          v-for="category in categories"
+          :key="category"
+          class="category clickable"
+          :class="{ 'category-selected': route.query.category === category }"
+          @click="setCategory(category)"
+        >
+          {{ category }}
+        </div>
+      </div>
+    </div>
+
+    <feedback-list
+      :feedbackData="feedbackData"
+      :isLoading="isLoading"
+      emptyMessage="No feedback posts to show."
+      @page-no-clicked="navigateToPage($event)"
+    />
+  </div>
 </template>
 
 <style scoped>
-a {
-  text-decoration: none;
+.body {
+  margin-top: 1em;
+  padding: 5em 1em 1em 1em;
+
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  row-gap: 5em;
 }
 
-.section {
+.sidebar {
+  margin-right: 2em;
+
   display: flex;
-  flex-flow: column wrap;
-  justify-content: space-around;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  row-gap: 1em;
+}
+
+.sidebar {
+  width: 20%;
+}
+
+.filter-selector {
+  width: 100%;
+  padding: 1em 2em;
+  border-radius: 0.5em;
+
+  color: light-dark(var(--light-text), var(--dark-text));
+  background: light-dark(var(--light-card-bg), var(--dark-card-bg));
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  row-gap: 0.5em;
+}
+
+.filter-selector .category {
+  margin-right: 0.5em;
+  /* color: var(--card-fg-text-color-high); */
+}
+
+.category-selected {
+  background-color: var(--card-fg-text-light);
+  color: white;
+}
+
+.feedback-list,
+.loading-bar {
+  width: 60%;
+}
+.loading-bar {
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.center {
-  position: fixed;
-  inset: 0;
-  margin: auto;
-  padding: 1rem;
-}
+@media screen and (max-width: 1024px) {
+  .body {
+    flex-direction: column;
+    row-gap: 1em;
+  }
 
-.add-button {
-  margin: 1em;
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+  }
+
+  .feedback-list {
+    width: 100%;
+  }
 }
 </style>

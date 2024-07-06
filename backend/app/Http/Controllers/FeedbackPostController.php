@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\FeedbackPost;
 use App\Models\User;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class FeedbackPostController extends Controller
 {
-
-    public function getAll()
+    public function getAll(Request $request)
     {
         return FeedbackPost::with('user')
+            ->when($request->category, function ($query, string $category) {
+                $query->where('category', $category);
+            })
             ->withCount('comments')
             ->paginate();
     }
@@ -39,7 +40,7 @@ class FeedbackPostController extends Controller
         //         $query->where('name', 'like', "%$q%");
         //     });
 
-        $res = $res->where(function (Builder $query) use ($q) {
+        $res = $res->where(function ($query) use ($q) {
             $query->where('title', 'like', "%$q%")
                 ->orWhere('description', 'like', "%$q%")
                 ->orWhereHas('user', function ($query) use ($q) {
@@ -54,6 +55,7 @@ class FeedbackPostController extends Controller
     {
         return Auth::user()
             ->feedbackPosts()
+            ->withCount('comments')
             ->with('user')
             ->paginate();
     }
@@ -62,6 +64,7 @@ class FeedbackPostController extends Controller
     {
         return $user
             ->feedbackPosts()
+            ->withCount('comments')
             ->with('user')
             ->paginate();
     }

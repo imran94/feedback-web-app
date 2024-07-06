@@ -6,7 +6,10 @@ import router from '@/router'
 import { marked } from 'marked'
 import Editor from 'primevue/editor'
 import { useAuthStore } from '@/stores/auth'
+import FeedbackCard from '@/components/FeedbackCard.vue'
 
+const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
+const defaultAvatarUrl = `${import.meta.env.VITE_BACKEND_BASE_URL}/storage/blank-avatar.jpg`
 const auth = useAuthStore()
 const post = ref({
   id: -1,
@@ -216,135 +219,61 @@ function isEmptyHtml(str) {
   <div class="section">
     <div v-show="isLoading" class="spinner-border center"></div>
 
-    <div v-show="post.id !== -1" class="m-card">
-      <div class="m-card-header">
-        <h4 class="m-card-title">{{ post.title }}</h4>
+    <div class="control-buttons"></div>
 
-        <div v-if="auth.isAdmin || isOwnPost" class="dropdown">
-          <button
-            class="btn btn-secondary dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          ></button>
-          <ul class="dropdown-menu">
-            <li>
-              <router-link
-                :to="{ name: 'editFeedbackForm', params: { id: post.id } }"
-                class="dropdown-item"
-              >
-                Edit
-              </router-link>
-            </li>
-            <li>
-              <a class="dropdown-item" href="javascript:void(0)" @click="deletePost">Delete</a>
-            </li>
-          </ul>
+    <feedback-card :feedback="post" showFullDescription="true" />
+
+    <div class="m-card">
+      <div class="heading">
+        <span>{{ post.comments.length }} Comments</span>
+      </div>
+
+      <template v-for="comment in post.comments" :key="comment.id">
+        <div class="comment" v-show="!comment.isEditing">
+          <img
+            class="avatar"
+            :src="comment.user.avatar_url ? `${baseUrl}/${user.avatar_url}` : defaultAvatarUrl"
+            alt="Avatar"
+          />
+          <div class="comment-content">
+            <div class="comment-user bold">
+              <div class="comment-username">{{ comment.user.name }}</div>
+              <div class="reply-button">Reply</div>
+            </div>
+
+            <div class="comment-text" v-html="comment.content"></div>
+          </div>
         </div>
-      </div>
 
-      <div class="m-card-subtitle">
-        <i class="bi bi-tag-fill"></i>
-        <span>{{ post.category }}</span>
-      </div>
-
-      <div class="m-card-subtitle">
-        <i class="bi bi-person-fill"></i>
-        <span>{{ post.user.name }}</span>
-      </div>
-
-      <div class="m-card-subtitle">
-        <i class="bi bi-calendar"></i>
-        <span>{{ formattedDate(post['created_at']) }}</span>
-      </div>
-
-      <div class="m-card-main" v-html="convertedDescription"></div>
-
-      <div class="m-card-subtitle">
-        <a href="javascript:void(0)" v-if="userVote.isUpvote === true" @click="cancelVote">
-          <i class="bi bi-hand-thumbs-up-fill"></i>
-        </a>
-        <a href="javascript:void(0)" v-else @click="vote(true)">
-          <i class="bi bi-hand-thumbs-up"></i>
-        </a>
-        <span>{{ post.vote_count }}</span>
-        <a href="javascript:void(0)" v-if="userVote.isUpvote === false" @click="cancelVote">
-          <i class="bi bi-hand-thumbs-down-fill"></i>
-        </a>
-        <a href="javascript:void(0)" v-else @click="vote(false)">
-          <i class="bi bi-hand-thumbs-down"></i>
-        </a>
-      </div>
+        <template v-if="comment.isEditing">
+          <div class="m-form-group">
+            <Editor v-model="comment.editedComment" editorStyle="height: 250px" />
+          </div>
+          <div>
+            <button class="btn btn-warning" @click="startEditingComment(comment, false)">
+              Cancel
+            </button>
+            <button
+              class="btn btn-secondary"
+              style="margin-left: 1em"
+              @click="updateComment(comment)"
+            >
+              Edit
+            </button>
+          </div>
+        </template>
+      </template>
     </div>
 
-    <form @submit.prevent="submitNewComment" v-if="auth.isAuth" class="comment-form">
+    <form @submit.prevent="submitNewComment" v-if="auth.isAuth" class="comment-form m-card">
       <div class="m-form-group">
-        <label>Write a comment</label>
-        <Editor v-model="ownComment" editorStyle="height: 300px" />
+        <div class="comment-form-label bold">Write a comment</div>
+        <Editor v-model="ownComment" editorStyle="height: 200px;" />
       </div>
       <button type="submit" class="btn btn-secondary" :disabled="isSubmittingComment">
         Submit
       </button>
     </form>
-
-    <div class="heading">
-      <h3>Comments</h3>
-    </div>
-
-    <template v-for="comment in post.comments" :key="comment.id">
-      <div class="m-card" v-show="!comment.isEditing">
-        <div class="m-card-header">
-          <div class="m-card-title">
-            <i class="bi bi-person-fill"></i>
-            <h5>{{ comment.user.name }}</h5>
-          </div>
-
-          <div v-if="auth.isAdmin || comment.user.id === auth.userId" class="dropdown">
-            <button
-              class="btn btn-secondary dropdown-toggle"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            ></button>
-            <ul class="dropdown-menu">
-              <li v-show="!comment.isEditing">
-                <a
-                  class="dropdown-item"
-                  href="javascript:void(0)"
-                  @click="startEditingComment(comment, true)"
-                >
-                  Edit
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="javascript:void(0)" @click="deleteComment(comment)"
-                  >Delete</a
-                >
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="m-card-main" v-html="comment.content" />
-      </div>
-
-      <template v-if="comment.isEditing">
-        <div class="m-form-group">
-          <Editor v-model="comment.editedComment" editorStyle="height: 250px" />
-        </div>
-        <div>
-          <button class="btn btn-warning" @click="startEditingComment(comment, false)">
-            Cancel
-          </button>
-          <button
-            class="btn btn-secondary"
-            style="margin-left: 1em"
-            @click="updateComment(comment)"
-          >
-            Edit
-          </button>
-        </div>
-      </template>
-    </template>
   </div>
 </template>
 
@@ -368,7 +297,7 @@ a {
 
 .m-card {
   margin: 1em 0.5em;
-  padding: 1em;
+  padding: 2em;
   box-shadow: 2px 2px 5px 2px #00000066;
   border-radius: 0.5em;
 
@@ -377,39 +306,7 @@ a {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-}
-
-.m-card-header {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.m-card-title,
-.m-card-subtitle {
-  display: inline-flex;
-  width: 100%;
-  justify-content: flex-start;
-  align-items: baseline;
-  column-gap: 0.75em;
-}
-
-.m-card-subtitle {
-  padding-top: 0.5em;
-}
-
-.m-card-subtitle i {
-  color: light-dark(black, white);
-}
-
-.m-card-main {
-  padding: 1em 0em 0.5em 0em;
-  padding-bottom: 0.5em;
-  width: 100%;
-
-  border-top: 1px solid light-dark(black, white);
+  row-gap: 1em;
 }
 
 .center {
@@ -417,16 +314,9 @@ a {
 }
 
 .heading {
+  font-size: 2em;
+  font-weight: bolder;
   align-self: flex-start;
-}
-
-.comment-form {
-  width: 100%;
-  padding-top: 1em;
-  padding-bottom: 1em;
-
-  display: flex;
-  flex-direction: column;
 }
 
 .m-form-group {
@@ -435,5 +325,55 @@ a {
 }
 .dropdown {
   padding-bottom: 0.5em;
+}
+
+.comment {
+  width: 100%;
+  padding: 3em 0em;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.comment + .comment {
+  border-top: 0.1px solid light-dark(#d3d3d3, #3c4144);
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.comment-content {
+  width: 100%;
+  margin-left: 2em;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  row-gap: 1em;
+}
+
+.comment-user {
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.comment-form-label {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
+
+.comment-text {
+  color: light-dark(#637196, #999183);
 }
 </style>

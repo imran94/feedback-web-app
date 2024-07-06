@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TokenAbility;
+use App\Jobs\SendConfirmationEmail;
 use App\Mail\EmailAddressConfirmation;
 use App\Models\User;
 use Carbon\Carbon;
@@ -26,7 +27,8 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8'
+            'password' => 'required|string|min:8',
+            'avatar' => 'image|max:1024|dimensions:max_width=1000,max_height=1000'
         ]);
 
         do {
@@ -38,11 +40,16 @@ class AuthController extends Controller
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
-        $user->is_admin = $request->input('is_admin') ?? false;
+        $user->is_admin = false;
         $user->email_verification_code = $emailVerificationCode;
+        if ($request->file('avatar') != null) {
+            $aviPath = $request->file('avatar')->storePublicly('avatars');
+            $user->avatar_url = $aviPath;
+        }
         $user->save();
 
         Mail::to($user->email)->send(new EmailAddressConfirmation($user));
+        // SendConfirmationEmail::dispatch($user);
 
         return response([
             'name' => $user->name
@@ -78,7 +85,7 @@ class AuthController extends Controller
     public function testUpload(Request $request)
     {
         $request->validate([
-            'avatar' => 'image|max:10240|dimensions:max_width=1000,max_height=1000'
+            'avatar' => 'image|max:1024|dimensions:max_width=1000,max_height=1000'
         ]);
 
         $filePath = $request->file('avatar')->storePublicly('avatars');
@@ -93,7 +100,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'email',
-            'avatar' => 'image|max:10240|dimensions:max_width=1000,max_height=1000'
+            'avatar' => 'image|max:1024|dimensions:max_width=1000,max_height=1000'
         ]);
 
         $user = User::find(Auth::user()->id);
@@ -221,6 +228,15 @@ class AuthController extends Controller
             $status === Password::PASSWORD_RESET ? 200 : 404
         );
     }
+
+    public function delete(User $user)
+    {
+        if ($user !== null) {
+            $user->delete();
+        }
+        return response()->json(['message' => 'User has been successfully deleted.']);
+    }
+
 
     // Internal functions not availabe to router
     private function createAccessToken(User $user)

@@ -22,7 +22,7 @@ async function tryLogin() {
     })
     if (response.ok) {
       auth.shouldRemember = rememberMe.value
-      await auth.setUser(data)
+      auth.setUser(data)
 
       router.push({ name: 'home' })
     } else {

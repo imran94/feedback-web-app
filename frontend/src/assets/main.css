@@ -1,40 +1,8 @@
-/* #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-} */
-
-/* color palette from <https://github.com/vuejs/theme> */
 :root {
   color-scheme: light dark;
+
+  --max-phone-width: 480px;
+  --max-tablet-width: 1024px;
 
   --light-text: black;
   --dark-text: white;
@@ -48,7 +16,13 @@ a,
   --light-border: --vt-c-white: #ffffff;
 
   --light-card-bg: #ffffff;
-  --dark-card-bg: #1d1d1d;
+  --dark-card-bg: #161819;
+
+  --light-card-fg: #ececec;
+  --dark-card-fg: #1c1e1f;
+
+  --card-fg-text-light: #4661e4;
+  --card-fg-text-dark: #4695d6;
 
   --light-card-bg-hover: #cecccc;
   --dark-card-bg-hover: #2d2d2d;
@@ -203,4 +177,27 @@ a.m-card:hover {
 
 .m-card-subtitle * {
   padding-right: 5px;
+}
+
+.rating,
+.category {
+  background-color: light-dark(var(--light-card-fg), var(--dark-card-fg));
+
+  font-weight: bold;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.category,
+.voted {
+  color: light-dark(var(--card-fg-text-light), var(--card-fg-text-dark));
+}
+
+.category {
+  font-size: 0.8em;
+  padding: 0.5em 1.25em;
+  border-radius: 5px;
 }

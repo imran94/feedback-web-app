@@ -67,8 +67,6 @@ const customFetch = async (url = '', method = 'GET', body = {}, isJson = true) =
 }
 
 const networkRequest = async (url = '', method = 'GET', body = {}, token, isJson = true) => {
-  console.log('body:', typeof body)
-
   const headers = {
     Accept: 'application/json',
     Authorization: token ? `Bearer ${token}` : null

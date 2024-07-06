@@ -12,12 +12,10 @@
             align-items: center;
             justify-content: flex-start;
             flex-flow: column wrap;
+            row-gap: 0.5em;
 
-            margin: 5em;
-        }
-
-        body>* {
-            margin: 0.5em;
+            margin: 1em;
+            font-family: serif;
         }
 
         a {
