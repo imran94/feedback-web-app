@@ -1,15 +1,26 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth'
 import { marked } from 'marked'
-defineProps(['feedback', 'showFullDescription', 'isLink'])
+defineProps(['feedback', 'showFullDescription', 'isLink', 'userVoted'])
+const emit = defineEmits(['on-vote-clicked'])
+const authStore = useAuthStore()
 
 function formattedDate(date) {
   return new Date(date).toLocaleString()
+}
+
+function onVoteClicked() {
+  emit('on-vote-clicked')
 }
 </script>
 <template>
   <div class="feedback-card" :class="{ 'is-link': isLink }">
     <div class="feedback-card-first-half">
-      <div class="rating">
+      <div
+        class="rating"
+        :class="{ clickable: authStore.isAuth, voted: userVoted }"
+        @click="onVoteClicked"
+      >
         <i class="bi bi-chevron-up"></i>
         <span class="vote-count">{{ feedback['vote_count'] }}</span>
       </div>

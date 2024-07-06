@@ -134,7 +134,13 @@ html {
 .btn,
 .btn-primary {
   background-color: light-dark(var(--light-btn-bg), var(--dark-btn-bg)) !important;
+  /* box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.4) !important; */
+  box-shadow: 1px 1px 4px 1px light-dark(var(--light-box-shadow), var(--dark-box-shadow)) !important;
   color: white !important;
+}
+
+.btn-danger {
+  background-color: maroon !important;
 }
 
 .btn:focus,

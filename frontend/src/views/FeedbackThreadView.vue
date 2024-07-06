@@ -23,7 +23,7 @@ const post = ref({
   user: { name: '' },
   comments: []
 })
-const userVote = ref({ isUpvote: null })
+const userVoted = ref(false)
 const isVoting = ref(false)
 const isLoading = ref(true)
 const isSubmittingComment = ref(false)
@@ -45,7 +45,7 @@ async function fetchPostDetails() {
     post.value.description = marked.parse(post.value.description)
     try {
       const voteRes = await customFetch(`/feedback/${post.value.id}/vote`)
-      userVote.value = { isUpvote: voteRes.data.is_upvote }
+      userVoted.value = voteRes.data.is_upvote
     } catch (err) {
       const mute = err
     }
@@ -54,7 +54,7 @@ async function fetchPostDetails() {
   isLoading.value = false
 }
 
-async function vote(isUpvote) {
+async function vote() {
   if (isVoting.value) {
     return
   }
@@ -65,13 +65,19 @@ async function vote(isUpvote) {
   }
 
   isVoting.value = true
-  userVote.value.isUpvote = isUpvote
+  if (userVoted.value) {
+    await cancelVote()
+    isVoting.value = false
+    return
+  }
+
+  userVoted.value = true
   try {
     const { response, data } = await customFetch(`/feedback/${post.value.id}/vote`, 'PUT', {
-      isUpvote: isUpvote
+      isUpvote: true
     })
     const mUserVote = data
-    userVote.value = { isUpvote: mUserVote.is_upvote }
+    userVoted.value = mUserVote.is_upvote
     post.value.vote_count = mUserVote.vote_count
   } catch (err) {
     console.error(err)
@@ -80,7 +86,7 @@ async function vote(isUpvote) {
 }
 
 async function cancelVote() {
-  userVote.value = {}
+  userVoted.value = false
 
   const { response, data } = await customFetch(`/feedback/${post.value.id}/vote`, 'DELETE')
 
@@ -219,9 +225,23 @@ function isEmptyHtml(str) {
   <div class="section">
     <div v-show="isLoading" class="spinner-border center"></div>
 
-    <div class="control-buttons"></div>
+    <div class="control-buttons" v-if="auth.isAdmin || isOwnPost">
+      <router-link
+        :to="{ name: 'editFeedbackForm', params: { id: post.id } }"
+        class="btn btn-secondary"
+      >
+        Edit Feedback
+      </router-link>
 
-    <feedback-card :feedback="post" showFullDescription="true" />
+      <div class="btn btn-danger clickable" @click="deletePost">Delete</div>
+    </div>
+
+    <feedback-card
+      :feedback="post"
+      :showFullDescription="true"
+      :userVoted="userVoted"
+      @on-vote-clicked="vote"
+    />
 
     <div class="m-card">
       <div class="heading">
@@ -238,7 +258,7 @@ function isEmptyHtml(str) {
           <div class="comment-content">
             <div class="comment-user bold">
               <div class="comment-username">{{ comment.user.name }}</div>
-              <div class="reply-button">Reply</div>
+              <!-- <div class="reply-button">Reply</div> -->
             </div>
 
             <div class="comment-text" v-html="comment.content"></div>
@@ -293,6 +313,19 @@ a {
 
   padding-left: 1.5em;
   padding-right: 1.5em;
+}
+
+.control-buttons {
+  width: 100%;
+  margin-bottom: 1em;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.control-buttons > * {
+  margin-left: 1em;
 }
 
 .m-card {

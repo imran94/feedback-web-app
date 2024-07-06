@@ -417,16 +417,6 @@ a {
   margin: 10em;
 }
 
-.btn {
-  box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.4);
-  background-color: royalblue;
-  color: white;
-}
-
-.btn-danger {
-  background-color: maroon;
-}
-
 .btn:hover,
 .btn:focus {
   filter: saturate(0.5);
