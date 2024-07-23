@@ -46,7 +46,6 @@ async function fetchPost(postId) {
   isLoading.value = true
   const { response, data } = await customFetch(`/feedback/${postId}`)
   if (response.status === 200) {
-    // posts.value = await res.json()
     post.value = data
     if (post.value['user_id'] !== auth.userId) {
       Swal.fire({

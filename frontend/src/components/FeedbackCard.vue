@@ -60,7 +60,6 @@ function onVoteClicked() {
 
   display: flex;
   flex-direction: row;
-  /* flex-flow: row wrap; */
   justify-content: space-between;
   align-items: flex-start;
   row-gap: 1em;
@@ -69,7 +68,6 @@ function onVoteClicked() {
 .feedback-card-first-half {
   display: flex;
   flex-direction: row;
-  /* flex-flow: row wrap; */
   justify-content: flex-start;
   align-items: flex-start;
 }
@@ -108,7 +106,6 @@ function onVoteClicked() {
 }
 
 .compact {
-  /* max-width: 500px; */
   text-overflow: ellipsis;
 
   overflow: hidden;
@@ -148,7 +145,6 @@ function onVoteClicked() {
   .rating {
     margin-top: 2em;
     flex-direction: row;
-    /* width: fit-content; */
     row-gap: 5em;
     padding: 0.5em 1em;
     font-size: 0.9em;
@@ -160,7 +156,6 @@ function onVoteClicked() {
 
   .feedback-card-end {
     align-self: flex-end;
-    /* justify-self: flex-end; */
   }
 }
 </style>

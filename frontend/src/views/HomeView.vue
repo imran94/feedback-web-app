@@ -31,7 +31,6 @@ async function fetchPosts() {
   if (response.ok) {
     feedbackData.value = data
     if (screen.width <= 600) {
-      // Shorten the number of page links to fit screen
       const links = feedbackData.value.links
       const newLinks = []
 
@@ -168,7 +167,6 @@ function setCategory(selectedCategory) {
 
 .filter-selector .category {
   margin-right: 0.5em;
-  /* color: var(--card-fg-text-color-high); */
 }
 
 .category-selected {

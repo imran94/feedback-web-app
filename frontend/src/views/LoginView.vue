@@ -106,7 +106,6 @@ async function tryLogin() {
 
   position: fixed;
   inset: 0;
-  /* width: fit-content; */
   height: fit-content;
   margin: auto;
   padding: 1rem;
@@ -153,7 +152,6 @@ async function tryLogin() {
 .login-social,
 .login-standard {
   width: 100%;
-  /* padding: 20px 30px; */
 
   display: flex;
   flex-flow: column wrap;
@@ -177,7 +175,6 @@ async function tryLogin() {
 .options {
   display: flex;
   flex-flow: row wrap;
-  /* align-items: space-between; */
   justify-content: space-between;
 }
 

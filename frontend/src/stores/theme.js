@@ -31,15 +31,11 @@ export const useThemeStore = defineStore('theme', () => {
     const app = document.querySelector('#app')
     if (isDarkMode.value) {
       document.body.style['color-scheme'] = 'dark'
-      // document.body.classList.add('dark-theme')
-      // document.body.classList.remove('light-theme')
 
       app.classList.add('dark-theme')
       app.classList.remove('light-theme')
     } else {
       document.body.style['color-scheme'] = 'light'
-      // document.body.classList.add('light-theme')
-      // document.body.classList.remove('dark-theme')
 
       app.classList.add('light-theme')
       app.classList.remove('dark-theme')

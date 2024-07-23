@@ -74,8 +74,6 @@ function removeSelectedAvatar() {
 }
 .input-avi-image {
   background: light-dark(var(--blank-avi-bg-light), var(--blank-avi-bg-dark));
-  /* background-color: #b8b8b8; */
-  /* color: white; */
   display: flex;
   align-items: center;
   justify-content: center;

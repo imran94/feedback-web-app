@@ -166,7 +166,6 @@ form {
 
 .m-form-group {
   width: 100%;
-  /* margin-bottom: 2em; */
 }
 
 .error,

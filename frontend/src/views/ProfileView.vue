@@ -92,7 +92,6 @@ async function fetchInfo() {
   }
 
   data.createdAt = new Date(data['created_at']).toLocaleDateString()
-  // data.avatarUrl = `${baseUrl}/${data.avatarUrl}`
   user.value = data
   edittedUser.value = {
     name: data.name,
@@ -118,7 +117,6 @@ async function fetchPosts() {
   console.log(data)
 
   if (screen.width <= 600) {
-    // Shorten the number of page links to fit screen
     const links = feedbackData.value.links
     const newLinks = []
 
@@ -231,7 +229,6 @@ function setNewAvatar(event) {
 }
 
 function removeSelectedAvatar() {
-  // avatarFileInput.value = null
   edittedUser.value.avatar = null
   edittedUser.value.avatarUrl = null
 }
