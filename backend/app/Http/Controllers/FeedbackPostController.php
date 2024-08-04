@@ -34,11 +34,6 @@ class FeedbackPostController extends Controller
         if (!empty($categories)) {
             $res = $res->whereIn('category', $categories);
         }
-        // $res = $res->where('title', 'like', "%$q%")
-        //     ->orWhere('description', 'like', "%$q%")
-        //     ->orWhereHas('user', function ($query) use ($q) {
-        //         $query->where('name', 'like', "%$q%");
-        //     });
 
         $res = $res->where(function ($query) use ($q) {
             $query->where('title', 'like', "%$q%")
