@@ -15,32 +15,28 @@ function onVoteClicked() {
 </script>
 <template>
   <div class="feedback-card" :class="{ 'is-link': isLink }">
-    <div class="feedback-card-first-half">
-      <div
-        class="rating"
-        :class="{ clickable: authStore.isAuth, voted: userVoted }"
-        @click="onVoteClicked"
-      >
-        <i class="bi bi-chevron-up"></i>
-        <span class="vote-count">{{ feedback['vote_count'] }}</span>
+    <!-- <div class="feedback-card-first-half"> -->
+    <div class="rating clickable" :class="{ voted: userVoted }" @click="onVoteClicked">
+      <i class="bi bi-chevron-up"></i>
+      <span class="vote-count">{{ feedback['vote_count'] }}</span>
+    </div>
+
+    <div class="feedback-card-middle">
+      <div class="feedback-card-title">
+        {{ feedback.title }}
       </div>
 
-      <div class="feedback-card-middle">
-        <div class="feedback-card-title">
-          {{ feedback.title }}
-        </div>
+      <div
+        class="feedback-card-desc"
+        :class="{ compact: !showFullDescription }"
+        v-html="marked.parse(feedback.description)"
+      ></div>
 
-        <div
-          class="feedback-card-desc"
-          :class="{ compact: !showFullDescription }"
-          v-html="marked.parse(feedback.description)"
-        ></div>
-
-        <div class="category">
-          {{ feedback.category }}
-        </div>
+      <div class="category">
+        {{ feedback.category }}
       </div>
     </div>
+    <!-- </div> -->
     <div class="feedback-card-end">
       <i class="bi bi-chat-left-fill"></i>
       <span>{{ feedback['comments_count'] ?? feedback.comments?.length }}</span>
@@ -57,12 +53,18 @@ function onVoteClicked() {
 
   color: light-dark(var(--light-text), var(--dark-text));
   background: light-dark(var(--light-card-bg), var(--dark-card-bg));
+  transition:
+    box-shadow 0.6s ease-in-out,
+    background-color 0.6s ease-in-out;
 
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  row-gap: 1em;
+  display: grid;
+  grid-template-columns: 1fr 90% 1fr;
+  align-items: center;
+  justify-items: start;
+}
+
+.rating {
+  align-self: self-start;
 }
 
 .feedback-card-first-half {
@@ -72,7 +74,8 @@ function onVoteClicked() {
   align-items: flex-start;
 }
 
-.is-link:hover {
+.is-link:hover,
+.is-link:active {
   background-color: light-dark(var(--light-card-bg-hover), var(--dark-card-bg-hover));
   box-shadow: 5px 5px 10px 5px
     light-dark(var(--light-box-shadow-hover), var(--dark-box-shadow-hover));
@@ -90,12 +93,13 @@ function onVoteClicked() {
 }
 
 .feedback-card-middle {
-  align-self: flex-start;
+  /* align-self: flex-start; */
 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  row-gap: 1em;
+  justify-content: center;
+  gap: 0.5em;
 
   margin-left: 3em;
   margin-right: 2em;
@@ -129,9 +133,14 @@ function onVoteClicked() {
   padding: 0.2em;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 600px) {
   .feedback-card {
     flex-direction: column;
+
+    grid-template: 1fr auto / 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+    row-gap: 1em;
   }
 
   .feedback-card-first-half {
@@ -140,10 +149,15 @@ function onVoteClicked() {
 
   .feedback-card-middle {
     margin: 0em;
+
+    grid-area: 1 / span 2;
   }
 
   .rating {
-    margin-top: 2em;
+    grid-area: 2/1;
+    padding: 0;
+    justify-self: self-start;
+
     flex-direction: row;
     row-gap: 5em;
     padding: 0.5em 1em;
@@ -155,7 +169,7 @@ function onVoteClicked() {
   }
 
   .feedback-card-end {
-    align-self: flex-end;
+    grid-area: 2/2;
   }
 }
 </style>

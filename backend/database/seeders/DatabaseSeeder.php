@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
 
         foreach (self::$feedbackSample as $sample) {
             $post = new FeedbackPost([
-                'title' => $sample->title,
-                'description' => $sample->description,
-                'category' => $sample->category,
+                'title' => $sample['title'],
+                'description' => $sample['description'],
+                'category' => $sample['category'],
                 'vote_count' => rand(0, $userCount)
             ]);
             $post->user()->associate(User::inRandomOrder()->first());

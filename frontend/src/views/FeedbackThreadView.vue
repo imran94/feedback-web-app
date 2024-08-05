@@ -250,19 +250,29 @@ function isEmptyHtml(str) {
 
       <template v-for="comment in post.comments" :key="comment.id">
         <div class="comment" v-show="!comment.isEditing">
-          <img
-            class="avatar"
-            :src="comment.user.avatar_url ? `${baseUrl}/${user.avatar_url}` : defaultAvatarUrl"
-            alt="Avatar"
-          />
-          <div class="comment-content">
-            <div class="comment-user bold">
-              <div class="comment-username">{{ comment.user.name }}</div>
-              <!-- <div class="reply-button">Reply</div> -->
-            </div>
-
-            <div class="comment-text" v-html="comment.content"></div>
+          <!-- <router-link
+      v-for="post in feedbackData.data"
+      :to="{ name: 'feedbackThread', params: { id: post.id } }"
+      :key="post.id"
+      class="feedback-card-link"
+    ></router-link> -->
+          <router-link :to="{ name: 'profile', params: { id: comment.user.id } }">
+            <img
+              class="avatar"
+              :src="
+                comment.user.avatar_url ? `${baseUrl}/${comment.user.avatar_url}` : defaultAvatarUrl
+              "
+              alt="Avatar"
+            />
+          </router-link>
+          <!-- <div class="comment-content"> -->
+          <div class="comment-user bold">
+            <div class="comment-username">{{ comment.user.name }}</div>
+            <!-- <div class="reply-button">Reply</div> -->
           </div>
+
+          <div class="comment-text" v-html="comment.content"></div>
+          <!-- </div> -->
         </div>
 
         <template v-if="comment.isEditing">
@@ -308,6 +318,8 @@ a {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+
+  max-width: var(--max-screen-width);
 
   padding-left: 1.5em;
   padding-right: 1.5em;
@@ -361,10 +373,14 @@ a {
 .comment {
   width: 100%;
   padding: 3em 0em;
+
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
+
+  display: grid;
+  grid-template: 1fr 1fr / 1fr auto;
 }
 
 .comment + .comment {
@@ -375,6 +391,8 @@ a {
   width: 50px;
   height: 50px;
   border-radius: 50%;
+
+  grid-row: 1/-1;
 }
 
 .comment-content {

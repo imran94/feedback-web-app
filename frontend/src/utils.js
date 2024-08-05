@@ -12,20 +12,7 @@ const CONTENT_TYPE = Object.freeze({
   FORM_DATA: null
 })
 
-const categories = [
-  'Product Feedback',
-  'Feature Requests',
-  'Bug Reports',
-  'Customer Reviews & In-app Ratings',
-  'Complaints & Questions',
-  'Praise & Appreciation Posts',
-  'Customer Surveys',
-  'Net Promoter Score (NPS) Surveys',
-  'Customer Satisfaction Survey',
-  'Customer Effort Score Feedback',
-  'Sales Objections & Feedback',
-  'Customer Churn Feedback'
-]
+const categories = ['UI', 'UX', 'Enhancement', 'Bug', 'Feature']
 
 const customFetch = async (url = '', method = 'GET', body = {}, isJson = true) => {
   if (!authStore) {

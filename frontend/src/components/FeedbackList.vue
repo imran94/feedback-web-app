@@ -45,6 +45,7 @@ function formattedDate(date) {
 <style scoped>
 .feedback-list {
   width: 100%;
+  /* max-width: var(--max-screen-width); */
 
   display: flex;
   flex-direction: column;
