@@ -256,7 +256,10 @@ function isEmptyHtml(str) {
       :key="post.id"
       class="feedback-card-link"
     ></router-link> -->
-          <router-link :to="{ name: 'profile', params: { id: comment.user.id } }">
+          <router-link
+            class="profile-link"
+            :to="{ name: 'profile', params: { id: comment.user.id } }"
+          >
             <img
               class="avatar"
               :src="
@@ -267,7 +270,12 @@ function isEmptyHtml(str) {
           </router-link>
           <!-- <div class="comment-content"> -->
           <div class="comment-user bold">
-            <div class="comment-username">{{ comment.user.name }}</div>
+            <router-link
+              class="profile-link"
+              :to="{ name: 'profile', params: { id: comment.user.id } }"
+            >
+              <div class="comment-username">{{ comment.user.name }}</div>
+            </router-link>
             <!-- <div class="reply-button">Reply</div> -->
           </div>
 
@@ -345,6 +353,8 @@ a {
   border-radius: 0.5em;
 
   width: 100%;
+  max-width: var(--max-screen-width);
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -380,19 +390,31 @@ a {
   align-items: flex-start;
 
   display: grid;
-  grid-template: 1fr 1fr / 1fr auto;
+  grid-template: 1fr 1fr / auto auto;
+  justify-items: start;
+  align-items: center;
+  column-gap: 2em;
 }
 
 .comment + .comment {
   border-top: 0.1px solid light-dark(#d3d3d3, #3c4144);
 }
 
+.profile-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.profile-link:hover,
+.profile-link:active {
+  text-decoration: underline;
+  /* grid-row: 1 / -1; */
+}
+
 .avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-
-  grid-row: 1/-1;
 }
 
 .comment-content {
@@ -411,6 +433,10 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.comment-text {
+  grid-column: 2;
 }
 
 .bold {

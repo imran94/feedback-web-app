@@ -72,7 +72,7 @@ async function submitFeedback() {
     if (response.status === 200) {
       const mPost = data
       Swal.fire({
-        title: `Feedback successfully ${mPost.id ? 'edited' : 'created'}`,
+        title: `Feedback successfully ${post.value.id ? 'edited' : 'created'}`,
         toast: true,
         timer: 2000,
         position: 'top-end',
