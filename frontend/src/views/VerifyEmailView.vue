@@ -3,9 +3,9 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
-const publicEnvVar = ref(import.meta.env.VITE_SOME_KEY)
-const privateEnvVar = ref(import.meta.env.VITE_DB_PASSWORD)
 const route = useRoute()
+
+const test = () => {}
 </script>
 
 <template>
