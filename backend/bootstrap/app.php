@@ -11,9 +11,17 @@
 |
 */
 
+use Illuminate\Foundation\Configuration\Middleware;
+
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
+
+// $app = Illuminate\Foundation\Application::configure(
+//     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
+// )->withMiddleware(function (Middleware $middleware) {
+//     $middleware->statefulApi();
+// })->create();
 
 /*
 |--------------------------------------------------------------------------
