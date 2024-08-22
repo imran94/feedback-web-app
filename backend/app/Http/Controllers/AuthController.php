@@ -43,8 +43,9 @@ class AuthController extends Controller
         $user->is_admin = false;
         $user->email_verification_code = $emailVerificationCode;
         if ($request->file('avatar') != null) {
-            $aviPath = $request->file('avatar')->storePublicly('avatars');
-            $user->avatar_url = $aviPath;
+            $aviPath = $request->file('avatar')->storePublicly('public');
+            $pathParts = explode('/', $aviPath);
+            $user->avatar_url = 'storage/' . end($pathParts);
         }
         $user->save();
 
@@ -67,6 +68,8 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid login details'], 401);
         }
 
+        // $request->session()->regenerate();
+
         $user = User::where('email', $request['email'])->firstOrFail();
 
         $accessToken = $this->createAccessToken($user)->plainTextToken;
@@ -88,7 +91,7 @@ class AuthController extends Controller
             'avatar' => 'image|max:1024|dimensions:max_width=1000,max_height=1000'
         ]);
 
-        $filePath = $request->file('avatar')->storePublicly('avatars');
+        $filePath = $request->file('avatar')->storePublicly('public');
 
         return response()->json([
             'partialFilePath' => $filePath,
@@ -114,8 +117,9 @@ class AuthController extends Controller
         }
 
         if ($request->file('avatar') != null) {
-            $aviPath = $request->file('avatar')->storePublicly('avatars');
-            $user->avatar_url = $aviPath;
+            $aviPath = $request->file('avatar')->storePublicly('public');
+            $pathParts = explode('/', $aviPath);
+            $user->avatar_url = 'storage/' . end($pathParts);
         }
         $user->save();
 

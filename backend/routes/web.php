@@ -21,3 +21,5 @@ Route::get('/', function () {
 Route::get('verify-email/{code}', [AuthController::class, 'verifyEmail'])->name('verify-email');
 
 Route::get('test-email', [AuthController::class, 'showEmailVerificationView']);
+
+Route::post('/login', [AuthController::class, 'authenticate']);
