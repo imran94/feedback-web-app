@@ -60,7 +60,7 @@ async function vote() {
   }
 
   if (!auth.isAuth) {
-    router.push({ name: 'login' })
+    // router.push({ name: 'login' })
     return
   }
 

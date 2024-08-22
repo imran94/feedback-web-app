@@ -5,6 +5,8 @@ import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 import PasswordField from '@/components/PasswordField.vue'
 
+const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
+
 const auth = useAuthStore()
 const isLoading = ref(false)
 const email = ref('')
@@ -16,7 +18,7 @@ const rememberMe = ref(false)
 async function tryLogin() {
   isLoading.value = true
   try {
-    const { response, data } = await customFetch('/authenticate', 'POST', {
+    const { response, data } = await customFetch(`${baseUrl}/login`, 'POST', {
       email: email.value,
       password: password.value
     })

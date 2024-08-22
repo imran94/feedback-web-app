@@ -114,7 +114,6 @@ async function fetchPosts() {
   }
 
   feedbackData.value = data
-  console.log(data)
 
   if (screen.width <= 600) {
     const links = feedbackData.value.links

@@ -113,10 +113,10 @@ function removeSelectedAvatar() {
           @on-avatar-removed="removeSelectedAvatar"
         />
 
-        <div class="m-form-group form-check">
-          <input class="form-check-input" type="checkbox" v-model="isAdmin" id="isAdminCheckbox" />
+        <!-- <div class="m-form-group form-check">
+          <input class="form-check-input" type="checkbox" v-model="" id="isAdminCheckbox" />
           <label class="form-check-label" for="isAdminCheckbox"> Admin </label>
-        </div>
+        </div> -->
 
         <div class="m-form-group">
           <span style="font-size: 0.8em"

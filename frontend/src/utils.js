@@ -1,7 +1,8 @@
 import { useAuthStore } from '@/stores/auth'
+import Cookies from 'js-cookie'
 
 let authStore = null
-const baseUrl = import.meta.env.VITE_BACKEND_URL
+const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
 
 const Enums = Object.freeze({
   ACCESS_TOKEN: 'accessToken',
@@ -20,6 +21,9 @@ const customFetch = async (url = '', method = 'GET', body = {}, isJson = true) =
   }
   authStore.initValues()
 
+  if (!url.startsWith('http')) {
+    url = `${baseUrl}/api${url}`
+  }
   let { response, data } = await networkRequest(url, method, body, authStore.accessToken, isJson)
 
   if (response.status !== 401 || (response.status === 401 && !authStore.isAuth)) {
@@ -32,7 +36,7 @@ const customFetch = async (url = '', method = 'GET', body = {}, isJson = true) =
   }
 
   const refreshResponse = await networkRequest(
-    '/user/refresh-token',
+    `${baseUrl}/api/user/refresh-token`,
     'GET',
     {},
     authStore.refreshToken
@@ -54,15 +58,23 @@ const customFetch = async (url = '', method = 'GET', body = {}, isJson = true) =
 }
 
 const networkRequest = async (url = '', method = 'GET', body = {}, token, isJson = true) => {
+  if (!Cookies.get('XSRF-TOKEN')) {
+    await fetch(`${baseUrl}/sanctum/csrf-cookie`, {
+      credentials: 'include'
+    })
+  }
+
   const headers = {
     Accept: 'application/json',
-    Authorization: token ? `Bearer ${token}` : null
+    Authorization: token ? `Bearer ${token}` : null,
+    'X-XSRF-TOKEN': encodeURIComponent(Cookies.get('XSRF-TOKEN'))
   }
   if (isJson) {
     headers['Content-Type'] = CONTENT_TYPE.JSON
   }
 
-  const response = await fetch(`${baseUrl}${url}`, {
+  const response = await fetch(url, {
+    // credentials: 'include',
     method: method,
     headers: headers,
     body: method !== 'GET' ? (isJson ? JSON.stringify(body) : body) : null
