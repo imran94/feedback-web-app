@@ -12,7 +12,7 @@ import Swal from 'sweetalert2'
 const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
 const route = useRoute()
 const authStore = useAuthStore()
-let userId = route.params.id !== '' ? route.params.id : authStore.userId ?? ''
+let userId = route.params.id !== '' ? route.params.id : (authStore.userId ?? '')
 
 const isLoading = ref(true)
 const isLoadingUser = ref(true)
@@ -114,7 +114,6 @@ async function fetchPosts() {
   }
 
   feedbackData.value = data
-  console.log(data)
 
   if (screen.width <= 600) {
     const links = feedbackData.value.links
